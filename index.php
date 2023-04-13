@@ -7,9 +7,10 @@
 		<div class="panel panel-default login-panel">
 		  	<div class="panel-heading panel-login">
 		  		<h1 class="text-center">
-					<img src="assets/images/logo.png" class="img-responsive">
+					<center>
+						<img src="assets/images/logo.png" class="img-responsive img-fluid mx-auto d-block">
+					</center>
 				</h1>
-		    	
 		 	</div>
 		  	<div class="panel-body">
 		    	<form accept-charset="UTF-8" role="form" method="POST" action="index.php" id="login_form">

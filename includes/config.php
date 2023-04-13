@@ -3,7 +3,7 @@
 $host = "localhost";
 $dbUsername = "root";
 $dbPassword = "";
-$dbName = "inventory_pos";
+$dbName = "pampangas_inasal";
 
 //Create connection
 $conn = new mysqli($host, $dbUsername, $dbPassword, $dbName);
