@@ -62,7 +62,7 @@
 						<a href="expenses.php" class="dashboard"><i class="material-icons">payments</i><span>Expenses</span></a>
 					</li>
 					<li class="">
-						<a href="analysis.php" class="dashboard"><i class="material-icons">equalizer</i><span>Charts</span></a>
+						<a href="charts.php" class="dashboard"><i class="material-icons">equalizer</i><span>Charts</span></a>
 					</li>
 					<li class="">
 						<a href="reports.php" class="dashboard"><i class="material-icons">summarize</i><span>Reports</span></a>
