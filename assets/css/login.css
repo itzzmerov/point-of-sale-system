@@ -1,6 +1,6 @@
 body {
   padding: 0;
-  background-color: #00a65a;
+  background-color: #638d23;
 }
 
 .btn-primary {
@@ -24,8 +24,8 @@ body {
 }
 
 .btn-success {
-  background-color: #009966;
-  border-color: #009966;
+  background-color: #638d23;
+  border-color: #638d23;
 }
 
 .panel-login {

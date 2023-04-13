@@ -10,7 +10,7 @@
 						<a href="index.php" class="dashboard"><i class="material-icons">dashboard</i><span>Dashboard</span></a>
 					</li>
 						
-					<li class="dropdown">
+					<li class="dropdown active">
 						<a href="#homeSubmenu1" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
 						<i class="material-icons">point_of_sale</i><span>Sales</span></a>
 						<ul class="collapse list-unstyled menu" id="homeSubmenu1">
@@ -22,7 +22,7 @@
 							</li>
 						</ul>
 					</li>
-					<li class="dropdown active">
+					<li class="dropdown">
 						<a href="#pageSubmenu2" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
 						<i class="material-icons">inventory</i><span>Products</span></a>
 						<ul class="collapse list-unstyled menu" id="pageSubmenu2">
@@ -102,26 +102,25 @@
 						<span class="material-icons"></span>
 						</button>
 						
-						<a class="navbar-brand" href="#">Manage Products</a>
+						<a class="navbar-brand" href="#">Dashboard</a>
 						<button class="d-inline-block d-lg-none ml-auto more-button" type="button" data-toggle="collapse"
 						data-target="#navbarcollapse" aria-controls="navbarcollapse" aria-expanded="false" aria-label="Toggle">
 							<span class="material-icons">menu</span>
 						</button>
 						
 					</nav>
-				</div>
-                
-                <!-- PHP to Delete Products -->
+				</div>	  
 
+                <!-- PHP for DELETING SALES -->
                 <?php
 					require_once '../../includes/config.php';
 
 					if(isset($_GET['delid'])) {
 						$id = intval($_GET['delid']);
-						$sql = mysqli_query($conn, "DELETE FROM products WHERE product_id = '$id'");
+						$sql = mysqli_query($conn, "DELETE FROM sales WHERE invoice_id = '$id'");
 
 						echo "<script>alert('Record has been successfully deleted!');</script>";
-						echo "<script>window.location='products-manage.php';</script>";
+						echo "<script>window.location='sales-manage.php';</script>";
 					}
 				?>
 
@@ -132,8 +131,8 @@
 
                     <div class="row" style="margin: 0 20px;">
                         <div class="col-md-12">
-                            <h2> Manage Products</h2>
-                            <a href="products-add.php" class="btn btn-success pull-right"> Add New Product</a>
+                            <h2> Manage Sales</h2>
+                            <a href="sales-add.php" class="btn btn-success pull-right"> Add New Sales</a>
                         </div>
                     </div>
 
@@ -148,9 +147,12 @@
                                 <table class="table table-bordered table-striped">
                                     <thead>
                                         <th>#</th>
-                                        <th>Name</th>
                                         <th>Category</th>
+                                        <th>Name</th>
+                                        <th>Quantity</th>
                                         <th>Price</th>
+                                        <th>Discount</th>
+                                        <th>SubTotal</th>
                                         <th>Actions</th>
                                     </thead>
                                     <tbody id="myTable">
@@ -170,7 +172,7 @@
                                             $next_page = $page_no + 1;
                                             $adjacents = "2";
 
-                                            $result_count = mysqli_query($conn, "SELECT COUNT(*) as total_records FROM products");
+                                            $result_count = mysqli_query($conn, "SELECT COUNT(*) as total_records FROM sales");
                                             $total_records = mysqli_fetch_array($result_count);
                                             $total_records = $total_records['total_records'];
                                             $total_no_of_pages = ceil($total_records / $total_records_per_page);
@@ -178,7 +180,7 @@
 
 
 
-                                            $sql = mysqli_query($conn, "SELECT * FROM (products INNER JOIN categories ON products.category_id = categories.category_id) LIMIT $offset, $total_records_per_page");
+                                            $sql = mysqli_query($conn, "SELECT * FROM ((sales INNER JOIN users ON sales.user_id = users.user_id) INNER JOIN categories ON sales.category_id = categories.category_id) LIMIT $offset, $total_records_per_page");
                                             $count = 1;
                                             $row = mysqli_num_rows($sql);
                                             if ($row > 0) {
@@ -188,12 +190,15 @@
 
                                         <tr>
                                             <td><?php echo $count; ?></td>
-                                            <td><?php echo $row['name']; ?></td>
                                             <td><?php echo $row['category_description']; ?></td>
-                                            <td>₱<?php echo $row['price']; ?></td>
+                                            <td><?php echo $row['last_name']; ?></td>
+                                            <td><?php echo $row['quantity']; ?></td>
+                                            <td><?php echo $row['price']; ?></td>
+                                            <td><?php echo $row['discount']; ?></td>
+                                            <td><?php echo $row['subtotal_amount']; ?></td>
                                             <td>
-                                                <a href="products-edit.php?id=<?php echo htmlentities($row['product_id']); ?>" class="btn btn-primary btn-sm"> Edit </a>
-                                                <a href="products-manage.php?delid=<?php echo htmlentities($row['product_id']); ?>" onclick="return confirm('Do you really want to delete this record?');" class="btn btn-danger btn-sm"> Delete </a>
+                                                <a href="sales-edit.php?id=<?php echo htmlentities($row['invoice_id']); ?>" class="btn btn-primary btn-sm"> Edit </a>
+                                                <a href="sales-manage.php?delid=<?php echo htmlentities($row['invoice_id']); ?>" onclick="return confirm('Do you really want to delete this record?');" class="btn btn-danger btn-sm"> Delete </a>
                                             </td>
                                         </tr>
 
@@ -299,5 +304,7 @@
                         });
                     });
                     </script>
+
+
 
 <?php include_once 'footer.php'; ?>

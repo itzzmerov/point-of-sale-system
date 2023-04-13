@@ -167,7 +167,7 @@
 								<?php 
 									include '../../includes/config.php';
 
-									$sql = "SELECT SUM(subtotal_amount) AS total_amount, COUNT(invoice_id) AS total_sales FROM sales";
+									$sql = "SELECT SUM(subtotal_amount) AS total_amount FROM sales";
 									$result = $conn->query($sql);
 									
 									if ($result->num_rows > 0) {
@@ -177,8 +177,15 @@
 								?>
 
 								<div class="card-content">
-									<p class="category"><strong>Sales</strong></p>
-									<h4 class="card-title"><?php echo $row['total_sales']; ?></h4>
+									<p class="category"><strong>Total Sales</strong></p>
+									<h4 class="card-title">₱<?php echo $row['total_amount']; ?></h4>
+								<?php 
+										}
+									}
+
+									$conn->close();
+
+								?>
 								</div>
 								<div class="card-footer">
 									<div class="stats">
@@ -194,11 +201,23 @@
 								<div class="card-header">
 									<div class="icon icon-success">
 										<span class="material-icons">attach_money</span>
-
 									</div>
 								</div>
+
+								<?php 
+									include '../../includes/config.php';
+
+									$sql = "SELECT SUM(amount) AS total_amount FROM expenses";
+									$result = $conn->query($sql);
+									
+									if ($result->num_rows > 0) {
+										// output data of each row
+										while($row = $result->fetch_assoc()) {
+
+								?>
+
 								<div class="card-content">
-									<p class="category"><strong>Revenue</strong></p>
+									<p class="category"><strong>Expenses</strong></p>
 									<h4 class="card-title">₱<?php echo number_format($row['total_amount']); ?></h4>
 								</div>
 
