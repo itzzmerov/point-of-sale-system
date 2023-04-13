@@ -1,0 +1,54 @@
+body {
+  padding: 0;
+  background-color: #00a65a;
+}
+
+.btn-primary {
+  background-color: #9966cc;
+  border-color: #9966cc;
+}
+
+.btn-primary:hover {
+  background-color: #993399;
+  border-color: #993399;
+}
+
+.btn-danger {
+  background-color: #f44336;
+  border-color: #f44336;
+}
+
+.btn-danger:hover {
+  background-color: #f72a1b;
+  border-color: #f72a1b;
+}
+
+.btn-success {
+  background-color: #009966;
+  border-color: #009966;
+}
+
+.panel-login {
+  background-color: #ffffff !important;
+}
+
+.clear {
+  clear: both;
+}
+
+.login-panel {
+  box-shadow: 5px 0px 77px #333;
+  margin-top: 150px;
+}
+
+.panel-body {
+  padding: 30px 30px 15px 30px;
+}
+
+.panel-heading {
+  padding: 15px 30px 15px 30px;
+}
+
+.login-form {
+  margin-top: 100px;
+}
