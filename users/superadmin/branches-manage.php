@@ -34,7 +34,7 @@
 							</li>
 						</ul>
 					</li>
-					<li class="dropdown active">
+					<li class="dropdown">
 						<a href="#pageSubmenu3" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
 						<i class="material-icons">group</i><span>Categories</span></a>
 						<ul class="collapse list-unstyled menu" id="pageSubmenu3">
@@ -46,7 +46,7 @@
 							</li>
 						</ul>
 					</li>
-					<li class="dropdown">
+					<li class="dropdown active">
 						<a href="#pageSubmenu4" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
 						<i class="material-icons">local_shipping</i><span>Branches</span></a>
 						<ul class="collapse list-unstyled menu" id="pageSubmenu4">
@@ -93,7 +93,7 @@
 						<span class="material-icons"></span>
 						</button>
 						
-						<a class="navbar-brand" href="#">Manage Categories</a>
+						<a class="navbar-brand" href="#">Manage Branches</a>
 						<button class="d-inline-block d-lg-none ml-auto more-button" type="button" data-toggle="collapse"
 						data-target="#navbarcollapse" aria-controls="navbarcollapse" aria-expanded="false" aria-label="Toggle">
 							<span class="material-icons">menu</span>
@@ -101,16 +101,17 @@
 					</nav>
 				</div>
 
-                <!-- PHP CODE FOR DELETING CATEGORY-->
+
+                <!-- PHP TO DELETE BRANCHES -->
                 <?php
 					require_once '../../includes/config.php';
 
 					if(isset($_GET['delid'])) {
 						$id = intval($_GET['delid']);
-						$sql = mysqli_query($conn, "DELETE FROM categories WHERE category_id = '$id'");
+						$sql = mysqli_query($conn, "DELETE FROM branches WHERE branch_id = '$id'");
 
 						echo "<script>alert('Record has been successfully deleted!');</script>";
-						echo "<script>window.location='categories-manage.php';</script>";
+						echo "<script>window.location='branches-manage.php';</script>";
 					}
 				?> 
 
@@ -121,8 +122,8 @@
 
                     <div class="row" style="margin: 0 20px;">
                         <div class="col-md-12">
-                            <h2> Manage Categories</h2>
-                            <a href="categories-add.php" class="btn btn-success pull-right"> Add New Category</a>
+                            <h2> Manage Branches</h2>
+                            <a href="branches-add.php" class="btn btn-success pull-right"> Add New Branch</a>
                         </div>
                     </div>
 
@@ -138,7 +139,10 @@
                                     <thead>
                                         <th>#</th>
                                         <th>Name</th>
-                                        <th>Remarks</th>
+                                        <th>Contact Number</th>
+                                        <th>Location</th>
+                                        <th>City</th>
+                                        <th>Status</th>
                                         <th>Actions</th>
                                     </thead>
                                     <tbody id="myTable">
@@ -158,7 +162,7 @@
                                             $next_page = $page_no + 1;
                                             $adjacents = "2";
 
-                                            $result_count = mysqli_query($conn, "SELECT COUNT(*) as total_records FROM categories");
+                                            $result_count = mysqli_query($conn, "SELECT COUNT(*) as total_records FROM branches");
                                             $total_records = mysqli_fetch_array($result_count);
                                             $total_records = $total_records['total_records'];
                                             $total_no_of_pages = ceil($total_records / $total_records_per_page);
@@ -166,7 +170,7 @@
 
 
 
-                                            $sql = mysqli_query($conn, "SELECT * FROM categories LIMIT $offset, $total_records_per_page");
+                                            $sql = mysqli_query($conn, "SELECT * FROM (branches INNER JOIN branch_status ON branches.branch_status = branch_status.status_id) LIMIT $offset, $total_records_per_page");
                                             $count = 1;
                                             $row = mysqli_num_rows($sql);
                                             if ($row > 0) {
@@ -176,11 +180,14 @@
 
                                         <tr>
                                             <td><?php echo $count; ?></td>
-                                            <td><?php echo $row['category_description']; ?></td>
-                                            <td><?php echo $row['remarks']; ?></td>
+                                            <td><?php echo $row['branch_description']; ?></td>
+                                            <td><?php echo $row['contact_number']; ?></td>
+                                            <td><?php echo $row['location']; ?></td>
+                                            <td><?php echo $row['city']; ?></td>
+                                            <td><?php echo $row['status_description']; ?></td>
                                             <td>
-                                                <a href="categories-edit.php?id=<?php echo htmlentities($row['category_id']); ?>" class="btn btn-primary btn-sm"> Edit </a>
-                                                <a href="categories-manage.php?delid=<?php echo htmlentities($row['category_id']); ?>" onclick="return confirm('Do you really want to delete this record?');" class="btn btn-danger btn-sm"> Delete </a>
+                                                <a href="branches-edit.php?id=<?php echo htmlentities($row['branch_id']); ?>" class="btn btn-primary btn-sm"> Edit </a>
+                                                <a href="branches-manage.php?delid=<?php echo htmlentities($row['branch_id']); ?>" onclick="return confirm('Do you really want to delete this record?');" class="btn btn-danger btn-sm"> Delete </a>
                                             </td>
                                         </tr>
 
@@ -286,7 +293,6 @@
                         });
                     });
                     </script>
-
 
 
 <?php include_once 'footer.php'; ?>

@@ -39,10 +39,10 @@
 						<i class="material-icons">group</i><span>Categories</span></a>
 						<ul class="collapse list-unstyled menu" id="pageSubmenu3">
 							<li>
-								<a href="customers-add.php">Add New Category</a>
+								<a href="categories-add.php">Add New Category</a>
 							</li>
 							<li>
-								<a href="customers-manage.php">Manage Categories</a>
+								<a href="categories-manage.php">Manage Categories</a>
 							</li>
 						</ul>
 					</li>

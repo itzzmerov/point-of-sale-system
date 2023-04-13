@@ -34,7 +34,7 @@
 							</li>
 						</ul>
 					</li>
-					<li class="dropdown active">
+					<li class="dropdown">
 						<a href="#pageSubmenu3" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
 						<i class="material-icons">group</i><span>Categories</span></a>
 						<ul class="collapse list-unstyled menu" id="pageSubmenu3">
@@ -46,7 +46,7 @@
 							</li>
 						</ul>
 					</li>
-					<li class="dropdown">
+					<li class="dropdown active">
 						<a href="#pageSubmenu4" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
 						<i class="material-icons">local_shipping</i><span>Branches</span></a>
 						<ul class="collapse list-unstyled menu" id="pageSubmenu4">
@@ -93,7 +93,7 @@
 						<span class="material-icons"></span>
 						</button>
 						
-						<a class="navbar-brand" href="#">Edit Category</a>
+						<a class="navbar-brand" href="#">Add New Branch</a>
 						<button class="d-inline-block d-lg-none ml-auto more-button" type="button" data-toggle="collapse"
 						data-target="#navbarcollapse" aria-controls="navbarcollapse" aria-expanded="false" aria-label="Toggle">
 							<span class="material-icons">menu</span>
@@ -101,68 +101,109 @@
 					</nav>
 				</div>
 
-                <!-- PHP TO UPDATE CATEGORY -->
+                <!-- PHP TO ADD NEW BRANCH -->
                 <?php 
 
 					require_once '../../includes/config.php';
 
-                    if(isset($_POST['update'])) {
-                        $id = $_GET['id'];
+					if(isset($_POST['submit'])) {
+						$branch_description = $_POST['description'];
+						$contact_number = $_POST['contact'];
+						$location = $_POST['location'];
+						$city = $_POST['city'];
+						$province = $_POST['province'];
+						$postal_code = $_POST['postal_code'];
+						$branch_status = $_POST['status'];
+						
+						$sql = mysqli_query($conn, "INSERT INTO branches(branch_description, contact_number, location, city, province, postal_code, branch_status) 
+							VALUES ('$branch_description', '$contact_number', '$location', '$city', '$province', '$postal_code', '$branch_status')");
 
-                        $category = $_POST['description'];
-						$remarks = $_POST['remarks'];
-
-                        $sql = mysqli_query($conn, "UPDATE categories SET category_description='$category', remarks='$remarks' WHERE category_id='$id'");
-                        if($sql) {
-                            echo "<script>alert('You have successfully updated the record!');</script>";
-                            echo "<script>document.location='categories-manage.php';</script>";
-                        }
-                    }
-                ?>
+						if ($sql) {
+							echo "<script>alert('New record successfully added!!!');</script>";
+							echo "<script>document.location='branches-manage.php';</script>";
+						} else {
+							echo "<script>alert('Something went wrong!');</script>";
+						}
+					}
+				
+				?>
 
                 <!--MAIN CONTENT HERE!!!!!!!!-->
 				<div class="container">
 					<div class="row">
 						<div class="col-md-12">
 							<br /><br />
-							<h2 style="margin: 0 20px;">Edit Category</h2>
+							<h2 style="margin: 0 20px;">Add New Branch</h2>
 						</div>
 					</div>
 
 					<!-- FORM FOR ADDING USERS --> 
 					<form method="POST" style="margin: 0 20px;">
 
-                        <?php 
-
-							require_once '../../includes/config.php';
-
-                            $id = $_GET['id'];
-                            $sql = mysqli_query($conn, "SELECT * FROM categories WHERE category_id = '$id'");
-
-                            while ($row = mysqli_fetch_array($sql)) {
-
-                        ?>
-
 						<br /><br />
 
 						<div class="row">
-							<div class="col-md-12">
-								<label>Description:</label>
-								<input type="text" class="form-control" name="description" value="<?php echo $row['category_description']; ?>"  required>
+							<div class="col-md-4"></div>
+							<div class="col-md-4"></div>
+							<div class="col-md-4">
+								<label>Status:</label>
+								<select class='form-select' name='status' required>
+									<option selected hidden value="">Select Here... </option>
+									<?php 
+										require_once '../../includes/config.php';
+
+										$sql = "SELECT * FROM branch_status";
+										$result = $conn->query($sql);
+
+										while ($row = $result->fetch_assoc()) {
+											echo "<option value='" . $row["status_id"] . "'>" . $row["status_description"] . "</option>";
+										}
+									?>
+								</select>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-12">
-								<label>Remarks:</label>
-								<input type="text" class="form-control" name="remarks" value="<?php echo $row['remarks']; } ?>"  required>
+								<label>Name:</label>
+								<input type="text" name="description" class="form-control" required>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<label>Contact Number:</label>
+								<input type="text" name="contact" class="form-control" required>
+							</div>
+						</div>
+
+						<br />
+						<h4>Address: </h4>
+
+						<div class="row">
+							<div class="col-md-6">
+								<label>Location:</label>
+								<input type="text" name="location" class="form-control" required>
+							</div>
+							<div class="col-md-6">
+								<label>City:</label>
+								<input type="text" name="city" class="form-control" required>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<label>Province:</label>
+								<input type="text" name="province" class="form-control" required>
+							</div>
+							<div class="col-md-6">
+								<label>Postal Code:</label>
+								<input type="text" name="postal_code" class="form-control" required>
 							</div>
 						</div>
 
 						<!-- BUTTONS FOR ADDING USERS --> 
 						<div class="row" style="margin-top: 1%;">
 							<div class="col-md-12 d-flex justify-content-end">
-								<button type="text" name="update" class="btn btn-primary">Submit</button>&nbsp; &nbsp;
-								<a href="categories-manage.php" class="btn btn-danger">Cancel</a>
+								<button type="text" name="submit" class="btn btn-primary">Submit</button>&nbsp; &nbsp;
+								<a href="branches-manage.php" class="btn btn-danger">Cancel</a>
 							</div>
 						</div><br />
  
