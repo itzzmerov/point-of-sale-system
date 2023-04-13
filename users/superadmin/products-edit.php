@@ -51,10 +51,10 @@
 						<i class="material-icons">local_shipping</i><span>Branches</span></a>
 						<ul class="collapse list-unstyled menu" id="pageSubmenu4">
 							<li>
-								<a href="supplier-add.php">Add New Branch</a>
+								<a href="branches-add.php">Add New Branch</a>
 							</li>
 							<li>
-								<a href="supplier-manage.php">Manage Branches</a>
+								<a href="branches-manage.php">Manage Branches</a>
 							</li>
 						</ul>
 					</li>

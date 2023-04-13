@@ -51,10 +51,10 @@
 						<i class="material-icons">local_shipping</i><span>Branches</span></a>
 						<ul class="collapse list-unstyled menu" id="pageSubmenu4">
 							<li>
-								<a href="supplier-add.php">Add New Branch</a>
+								<a href="branches-add.php">Add New Branch</a>
 							</li>
 							<li>
-								<a href="supplier-manage.php">Manage Branches</a>
+								<a href="branches-manage.php">Manage Branches</a>
 							</li>
 						</ul>
 					</li>
@@ -107,10 +107,10 @@
 
 					if(isset($_GET['delid'])) {
 						$id = intval($_GET['delid']);
-						$sql = mysqli_query($conn, "DELETE FROM customers WHERE customer_id = '$id'");
+						$sql = mysqli_query($conn, "DELETE FROM categories WHERE category_id = '$id'");
 
 						echo "<script>alert('Record has been successfully deleted!');</script>";
-						echo "<script>window.location='customers-manage.php';</script>";
+						echo "<script>window.location='categories-manage.php';</script>";
 					}
 				?> 
 
@@ -122,7 +122,7 @@
                     <div class="row" style="margin: 0 20px;">
                         <div class="col-md-12">
                             <h2> Manage Categories</h2>
-                            <a href="customers-add.php" class="btn btn-success pull-right"> Add New User</a>
+                            <a href="categories-add.php" class="btn btn-success pull-right"> Add New Category</a>
                         </div>
                     </div>
 

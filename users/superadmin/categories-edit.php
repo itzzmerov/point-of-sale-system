@@ -51,10 +51,10 @@
 						<i class="material-icons">local_shipping</i><span>Branches</span></a>
 						<ul class="collapse list-unstyled menu" id="pageSubmenu4">
 							<li>
-								<a href="supplier-add.php">Add New Branch</a>
+								<a href="branches-add.php">Add New Branch</a>
 							</li>
 							<li>
-								<a href="supplier-manage.php">Manage Branches</a>
+								<a href="branches-manage.php">Manage Branches</a>
 							</li>
 						</ul>
 					</li>
@@ -103,7 +103,8 @@
 
                 <!-- PHP TO UPDATE CATEGORY -->
                 <?php 
-                    require_once '../../includes/config.php';
+
+					require_once '../../includes/config.php';
 
                     if(isset($_POST['update'])) {
                         $id = $_GET['id'];
@@ -132,6 +133,9 @@
 					<form method="POST" style="margin: 0 20px;">
 
                         <?php 
+
+							require_once '../../includes/config.php';
+
                             $id = $_GET['id'];
                             $sql = mysqli_query($conn, "SELECT * FROM categories WHERE category_id = '$id'");
 
@@ -157,7 +161,7 @@
 						<!-- BUTTONS FOR ADDING USERS --> 
 						<div class="row" style="margin-top: 1%;">
 							<div class="col-md-12 d-flex justify-content-end">
-								<button type="text" name="submit" class="btn btn-primary">Submit</button>&nbsp; &nbsp;
+								<button type="text" name="update" class="btn btn-primary">Submit</button>&nbsp; &nbsp;
 								<a href="categories-manage.php" class="btn btn-danger">Cancel</a>
 							</div>
 						</div><br />
