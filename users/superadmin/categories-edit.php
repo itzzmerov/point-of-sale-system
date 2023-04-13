@@ -93,7 +93,7 @@
 						<span class="material-icons"></span>
 						</button>
 						
-						<a class="navbar-brand" href="#">Add New Category</a>
+						<a class="navbar-brand" href="#">Edit Category</a>
 						<button class="d-inline-block d-lg-none ml-auto more-button" type="button" data-toggle="collapse"
 						data-target="#navbarcollapse" aria-controls="navbarcollapse" aria-expanded="false" aria-label="Toggle">
 							<span class="material-icons">menu</span>
@@ -101,51 +101,56 @@
 					</nav>
 				</div>
 
-                <!-- PHP TO ADD NEW CATEGORY -->
+                <!-- PHP TO UPDATE CATEGORY -->
                 <?php 
+                    require_once '../../includes/config.php';
 
-					require_once '../../includes/config.php';
+                    if(isset($_POST['update'])) {
+                        $id = $_GET['id'];
 
-					if(isset($_POST['submit'])) {
-						$category_description = $_POST['description'];
+                        $category = $_POST['description'];
 						$remarks = $_POST['remarks'];
-						
-						$sql = mysqli_query($conn, "INSERT INTO categories(category_description, remarks) VALUES ('$category_description', '$remarks')");
 
-						if ($sql) {
-							echo "<script>alert('New record successfully added!!!');</script>";
-							echo "<script>document.location='categories-manage.php';</script>";
-						} else {
-							echo "<script>alert('Something went wrong!');</script>";
-						}
-					}
-				
-				?>
+                        $sql = mysqli_query($conn, "UPDATE categories SET category_description='$category', remarks='$remarks' WHERE category_id='$id'");
+                        if($sql) {
+                            echo "<script>alert('You have successfully updated the record!');</script>";
+                            echo "<script>document.location='categories-manage.php';</script>";
+                        }
+                    }
+                ?>
 
                 <!--MAIN CONTENT HERE!!!!!!!!-->
 				<div class="container">
 					<div class="row">
 						<div class="col-md-12">
 							<br /><br />
-							<h2 style="margin: 0 20px;">Add New Category</h2>
+							<h2 style="margin: 0 20px;">Edit Category</h2>
 						</div>
 					</div>
 
 					<!-- FORM FOR ADDING USERS --> 
 					<form method="POST" style="margin: 0 20px;">
 
+                        <?php 
+                            $id = $_GET['id'];
+                            $sql = mysqli_query($conn, "SELECT * FROM categories WHERE category_id = '$id'");
+
+                            while ($row = mysqli_fetch_array($sql)) {
+
+                        ?>
+
 						<br /><br />
 
 						<div class="row">
 							<div class="col-md-12">
 								<label>Description:</label>
-								<input type="text" name="description" class="form-control" required>
+								<input type="text" class="form-control" name="description" value="<?php echo $row['category_description']; ?>"  required>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-12">
 								<label>Remarks:</label>
-								<input type="text" class="form-control" id="remarks" name="remarks" required>
+								<input type="text" class="form-control" name="remarks" value="<?php echo $row['remarks']; } ?>"  required>
 							</div>
 						</div>
 
@@ -153,7 +158,7 @@
 						<div class="row" style="margin-top: 1%;">
 							<div class="col-md-12 d-flex justify-content-end">
 								<button type="text" name="submit" class="btn btn-primary">Submit</button>&nbsp; &nbsp;
-								<a href="customers-manage.php" class="btn btn-danger">Cancel</a>
+								<a href="categories-manage.php" class="btn btn-danger">Cancel</a>
 							</div>
 						</div><br />
  
