@@ -100,62 +100,67 @@
 						</button>
 						
 					</nav>
-				</div>	  
+				</div>
 
-				<!-- PHP FOR ADDING NEW PRODUCT IN THE DATABASE -->
-				<?php 
+                <!-- PHP UPDATING DATABASE for PRODUCTS -->
 
-					require_once '../../includes/config.php';
+                <?php 
+                    require_once '../../includes/config.php';
 
-					if(isset($_POST['submit'])) {
-						$name = $_POST['name'];
+                    if(isset($_POST['update'])) {
+                        $id = $_GET['id'];
+
+                        $name = $_POST['name'];
 						$category = $_POST['category'];
 						$price = $_POST['price'];
 
-						$sql = mysqli_query($conn, "INSERT INTO products(name, category_id, price) 
-							VALUES ('$name', '$category', '$price')");
+                        $sql = mysqli_query($conn, "UPDATE products SET name='$name', category_id='$category', price='$price' WHERE product_id='$id'");
+                        if($sql) {
+                            echo "<script>alert('You have successfully updated the record!');</script>";
+                            echo "<script>document.location='products-manage.php';</script>";
+                        }
+                    }
+                ?>
 
-						if ($sql) {
-							echo "<script>alert('New record successfully added!!!');</script>";
-							echo "<script>document.location='products-manage.php';</script>";
-						} else {
-							echo "<script>alert('Something went wrong!');</script>";
-						}
-					}
-				
-				?>
-
-				<!--MAIN CONTENT HERE!!!!!!!!-->
-				<div class="container">
-					<div class="row">
+                <!--MAIN CONTENT HERE!!!!!!!!-->
+                <div class="container">
+					<div class="row" style="margin: 0 20px;">
 						<div class="col-md-12">
 							<br /><br />
-							<h2 style="margin: 0 20px;">Add New Product</h2>
+							<h2>Update Product Information</h2>
 						</div>
 					</div>
 
 					<!-- FORM FOR ADDING USERS --> 
 					<form method="POST" style="margin: 0 20px;">
 
+                        <?php 
+
+                            $id = $_GET['id'];
+                            $sql1 = mysqli_query($conn, "SELECT * FROM (products INNER JOIN categories ON products.category_id = categories.category_id) WHERE product_id = '$id'");
+
+                            while ($row = mysqli_fetch_array($sql1)) {
+
+                            
+                        ?>
 						<br /><br />
 						<h4>Product Information: </h4>
 
 						<div class="row">
 							<div class="col-md-12">
 								<label>Name:</label>
-								<input type="text" name="name" class="form-control" required>
+								<input type="text" name="name" value="<?php echo $row['name']; ?>" class="form-control" required>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-6">
-								<label>Category</label>
+								<label>Category:</label>
 								<select class='form-select' name='category' required>
-									<option selected hidden value="">Select Here... </option>
+									<option selected hidden value="<?php echo $row['category_id']; ?>"><?php echo $row['category_description']; } ?></option>
 									<?php 
-										require_once '../../includes/config.php';
 
-										$sql = "SELECT * FROM categories";
-										$result = $conn->query($sql);
+										$sql2 = "SELECT * FROM categories";
+										$result = $conn->query($sql2);
 
 										while ($row = $result->fetch_assoc()) {
 											echo "<option value='" . $row["category_id"] . "'>" . $row["category_description"] . "</option>";
@@ -163,17 +168,24 @@
 									?>
 								</select>
 							</div>
-							<div class="col-md-6">
-								<label>Price:</label>
-								<input type="text" name="price" class="form-control" required>
-							</div>
-						</div><br />
+                            <div class="col-md-6">
+                                <label>Price:</label>
+                                <?php 
+
+                                    $id = $_GET['id'];
+                                    $sql6 = mysqli_query($conn, "SELECT * FROM products WHERE product_id = '$id'");
+
+                                    while ($row = mysqli_fetch_array($sql6)) {
+                                ?>
+                                <input type="text" name="price" value="<?php echo $row['price']; } ?>" class="form-control" required>
+                            </div>
+						</div>
 
 						<!-- BUTTONS FOR ADDING USERS --> 
 						<div class="row" style="margin-top: 1%;">
 							<div class="col-md-12 d-flex justify-content-end">
-								<button type="text" name="submit" class="btn btn-primary">Submit</button>&nbsp; &nbsp;
-								<a href="products-manage.php" class="btn btn-danger">Cancel</a> 
+								<button type="text" name="update" class="btn btn-success">Update</button> &nbsp;&nbsp;&nbsp;
+								<a href="products-manage.php" class="btn btn-danger">Cancel</a>
 							</div>
 						</div><br />
 
@@ -181,5 +193,4 @@
 				</div>
 
 
-                
 <?php include_once 'footer.php'; ?>

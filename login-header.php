@@ -8,7 +8,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-        <title>GreenTelCom | POS & Inventory</title>
+        <title>Pampanga's Inasal | POS System</title>
 
         <!-- CSS -->
         <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
