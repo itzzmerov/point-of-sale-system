@@ -47,18 +47,6 @@
 						</ul>
 					</li>
 					<li class="dropdown">
-						<a href="#pageSubmenu4" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-						<i class="material-icons">local_shipping</i><span>Branches</span></a>
-						<ul class="collapse list-unstyled menu" id="pageSubmenu4">
-							<li>
-								<a href="branches-add.php">Add New Branch</a>
-							</li>
-							<li>
-								<a href="branches-manage.php">Manage Branches</a>
-							</li>
-						</ul>
-					</li>
-					<li class="dropdown">
 						<a href="#pageSubmenu5" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
 						<i class="material-icons">payments</i><span>Expenses</span></a>
 						<ul class="collapse list-unstyled menu" id="pageSubmenu5">
