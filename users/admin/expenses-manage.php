@@ -175,9 +175,14 @@
                                             $total_no_of_pages = ceil($total_records / $total_records_per_page);
                                             $second_last = $total_no_of_pages - 1;
 
+                                            $admin = $_SESSION['admin_name'];
+											$sql1 = "SELECT * FROM users WHERE username = '$admin'";
+											$result = $conn->query($sql1);
+											while($row = $result->fetch_assoc()) {
+												$branch = $row['branch_id'];
+											}
 
-
-                                            $sql = mysqli_query($conn, "SELECT * FROM expenses LIMIT $offset, $total_records_per_page");
+                                            $sql = mysqli_query($conn, "SELECT * FROM expenses WHERE branch_id = '$branch' LIMIT $offset, $total_records_per_page");
                                             $count = 1;
                                             $row = mysqli_num_rows($sql);
                                             if ($row > 0) {

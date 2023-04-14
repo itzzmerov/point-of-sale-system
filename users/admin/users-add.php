@@ -117,6 +117,13 @@
 
 					require_once '../../includes/config.php';
 
+					$admin = $_SESSION['admin_name'];
+					$sql1 = "SELECT * FROM users WHERE username = '$admin'";
+					$result = $conn->query($sql1);
+					while($row = $result->fetch_assoc()) {
+						$branch = $row['branch_id'];
+					}
+
 					if(isset($_POST['submit'])) {
 						$first_name = $_POST['first_name'];
 						$middle_name = $_POST['middle_name'];
@@ -130,7 +137,7 @@
 						$province = $_POST['province'];
 						$country = $_POST['country'];
 						$zipcode = $_POST['zipcode'];
-						$branch = $_POST['branch'];
+						$branch = $branch;
 						$role = $_POST['role'];
 						$username = $_POST['username'];
 						$email = $_POST['email'];
@@ -231,33 +238,11 @@
 
 						<br />
 						<h4>Account Information: </h4>
-
-						<div class="row">
-							<div class="col-md-6">
-								<label>Branch:</label>
-								<select class="form-select" name="branch" id="branch" required>
-									<option selected hidden value="">Select Here... </option>
-									<?php 
-									
-										require_once '../../includes/config.php';
-
-										$sql = "SELECT * FROM branches WHERE branch_status=1";
-										$result = mysqli_query($conn, $sql);
-
-										while ($row = mysqli_fetch_array($result)) {
-											echo "<option value='" . $row["branch_id"] . "'>" . $row["branch_description"] . "</option>";
-										}
-									?>
-								</select>
-								
-							</div>
-						</div>
 						<div class="row">
 							<div class="col-md-6">
 								<label>Role:</label>
 								<select class="form-select" name="role" id="role" required>
 									<option selected hidden value="">Select Here </option>
-									<option value="superadmin">Super Administrator</option>
 									<option value="admin">Administrator</option>
 									<option value="admin">Accountant</option>
 									<option value="cashier">Cashier / Staff</option>

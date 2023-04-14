@@ -25,8 +25,19 @@ switch ($filter) {
 }
 
 // Query sales data
+
+session_start();
+
+$admin = $_SESSION['admin_name'];
+$sql1 = "SELECT * FROM users WHERE username = '$admin'";
+$result = $conn->query($sql1);
+while($row = $result->fetch_assoc()) {
+    $branch = $row['branch_id'];
+}
+
 $sql = "SELECT DATE_FORMAT(invoice_date, '{$date_format}') AS date, SUM(subtotal_amount) AS total_sales
         FROM sales
+        WHERE branch_id = '$branch'
         GROUP BY date
         ORDER BY invoice_date ASC";
 $result = mysqli_query($conn, $sql);

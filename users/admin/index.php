@@ -263,7 +263,14 @@
 								<?php 
 									include '../../includes/config.php';
 
-									$sql = "SELECT COUNT(user_id) AS total_users FROM users";
+									$admin = $_SESSION['admin_name'];
+									$sql1 = "SELECT * FROM users WHERE username = '$admin'";
+									$result = $conn->query($sql1);
+									while($row = $result->fetch_assoc()) {
+										$branch = $row['branch_id'];
+									}
+
+									$sql = "SELECT COUNT(user_id) AS total_users FROM users WHERE branch_id = '$branch'";
 									$result = $conn->query($sql);
 									
 									if ($result->num_rows > 0) {
