@@ -115,13 +115,21 @@
 
 					require_once '../../includes/config.php';
 
+					$admin = $_SESSION['admin_name'];
+					$sql1 = "SELECT * FROM users WHERE username = '$admin'";
+					$result = $conn->query($sql1);
+					while($row = $result->fetch_assoc()) {
+						$branch = $row['branch_id'];
+					}
+
 					if(isset($_POST['submit'])) {
 						$type = $_POST['type'];
 						$amount = $_POST['amount'];
 						$date = date('Y-m-d H:i:s');
 						$remarks = $_POST['remarks'];
 						
-						$sql = mysqli_query($conn, "INSERT INTO expenses(type, amount, date, remarks) VALUES ('$type', '$amount', '$date', '$remarks')");
+						
+						$sql = mysqli_query($conn, "INSERT INTO expenses(type, amount, date, remarks, branch_id) VALUES ('$type', '$amount', '$date', '$remarks', '$branch')");
 
 						if ($sql) {
 							echo "<script>alert('New record successfully added!!!');</script>";

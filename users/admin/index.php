@@ -113,6 +113,7 @@
 				
 				<!--DASHBOARD CONTENT-->
 				<div class="main-content">
+
 					<div class="row">
 						<div class="col-lg-3 col-md-6 col-sm-6">
 							<div class="card card-stats">
@@ -166,8 +167,15 @@
 
 								<?php 
 									include '../../includes/config.php';
+									
+									$admin = $_SESSION['admin_name'];
+									$sql1 = "SELECT * FROM users WHERE username = '$admin'";
+									$result = $conn->query($sql1);
+									while($row = $result->fetch_assoc()) {
+										$branch = $row['branch_id'];
+									}
 
-									$sql = "SELECT SUM(subtotal_amount) AS total_amount FROM sales";
+									$sql = "SELECT SUM(subtotal_amount) AS total_amount FROM sales WHERE branch_id = '$branch'";
 									$result = $conn->query($sql);
 									
 									if ($result->num_rows > 0) {
@@ -207,7 +215,14 @@
 								<?php 
 									include '../../includes/config.php';
 
-									$sql = "SELECT SUM(amount) AS total_amount FROM expenses";
+									$admin = $_SESSION['admin_name'];
+									$sql1 = "SELECT * FROM users WHERE username = '$admin'";
+									$result = $conn->query($sql1);
+									while($row = $result->fetch_assoc()) {
+										$branch = $row['branch_id'];
+									}
+
+									$sql = "SELECT SUM(amount) AS total_amount FROM expenses WHERE branch_id = '$branch'";
 									$result = $conn->query($sql);
 									
 									if ($result->num_rows > 0) {

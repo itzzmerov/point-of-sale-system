@@ -26,7 +26,12 @@
 
                 } elseif ($row['role'] == 'admin') {
                     $_SESSION['admin_name'] = $row['username'];
+                    $_SESSION['branch'] = $row['branch_id'];
                     header('location: users/admin/index.php');
+
+                } elseif ($row['role'] == 'accountant') {
+                    $_SESSION['accountant_name'] = $row['username'];
+                    header('location: users/accountant/index.php');
 
                 } elseif ($row['role'] == 'cashier') {
                     $_SESSION['cashier_name'] = $row['username'];

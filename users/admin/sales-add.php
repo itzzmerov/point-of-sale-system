@@ -131,8 +131,8 @@
                             <?php 
                                 require_once '../../includes/config.php';
 
-                                $superadmin_name = $_SESSION['superadmin_name'];
-                                $sql = "SELECT * FROM users INNER JOIN branches ON users.branch_id = branches.branch_id WHERE username = '$superadmin_name'";
+                                $admin_name = $_SESSION['admin_name'];
+                                $sql = "SELECT * FROM users INNER JOIN branches ON users.branch_id = branches.branch_id WHERE username = '$admin_name'";
                                 $result = $conn->query($sql);
 
                                 if ($result->num_rows > 0) {

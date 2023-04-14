@@ -3,7 +3,7 @@
 
 	session_start();
 
-	if (!isset($_SESSION['superadmin_name'])) {
+	if (!isset($_SESSION['admin_name'])) {
         $_SESSION['msg'] = "You must log in first";
         header('location: ../../index.php');
     }
