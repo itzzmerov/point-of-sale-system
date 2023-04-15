@@ -4,10 +4,27 @@
 			<nav id="sidebar">
 				<div class="sidebar-header">
 					<img src="../../assets/images/logo.png" class="img-fluid"/>
+					<?php 
+						
+						$admin = $_SESSION['superadmin_name'];
+						$sql1 = "SELECT * FROM (users INNER JOIN branches ON users.branch_id = branches.branch_id) WHERE username = '$admin'";
+						$result = $conn->query($sql1);
+						while($row = $result->fetch_assoc()) {
+							$branch = $row['branch_description'];
+							$name = $row['first_name'] . " " . $row['last_name'];
+							$role = $row['role'];
+						
+					?>
+
+					<div class="ml-auto" id="userInfo">
+						<p class="text-right"><?php echo $name . " | " . $role; ?></p>
+						<p class="text-right"><?php echo $branch; } ?></p>
+					</div>
 				</div>
 				<ul class="list-unstyled components">
 					<li class="">
 						<a href="index.php" class="dashboard"><i class="material-icons">dashboard</i><span>Dashboard</span></a>
+						
 					</li>
 						
 					<li class="dropdown">
@@ -133,10 +150,8 @@
 						$role = $_POST['role'];
 						$username = $_POST['username'];
 						$email = $_POST['email'];
-						$password = $_POST['password'];
-						$password = md5($password);
 
-                        $sql = mysqli_query($conn, "UPDATE users SET first_name='$first_name', middle_name='$middle_name', last_name='$last_name', sex='$sex', birthdate='$birthdate', phone_number='$phone_number', street_address='$street_address', barangay='$barangay', city='$city', province='$province', country='$country', zipcode='$zipcode', role='$role', username='$username', email='$email', password='$password', branch_id='$branch' WHERE user_id='$id'");
+                        $sql = mysqli_query($conn, "UPDATE users SET first_name='$first_name', middle_name='$middle_name', last_name='$last_name', sex='$sex', birthdate='$birthdate', phone_number='$phone_number', street_address='$street_address', barangay='$barangay', city='$city', province='$province', country='$country', zipcode='$zipcode', role='$role', username='$username', email='$email', branch_id='$branch' WHERE user_id='$id'");
                         if($sql) {
                             echo "<script>alert('You have successfully updated the record!');</script>";
                             echo "<script>document.location='users-manage.php';</script>";
@@ -310,10 +325,6 @@
 								<label>Email Address:</label>
 								<input type="text" name="email" class="form-control" value="<?php echo $row['email'] ?>" required>
 							</div>
-							<div class="col-md-6">
-								<label>Password:</label>
-								<input type="password" name="password" class="form-control" value="<?php echo $row['password'] ?>" required>
-							</div>
 						</div><br />
                         
                         <?php
@@ -330,5 +341,25 @@
 
 					</form>
 				</div>
+
+				<script>
+					$(document).ready(function() {
+						// Set initial state for user info visibility
+						var isUserInfoVisible = true;
+						
+						// Listen for click event on sidebar-collapse button
+						$('#sidebar-collapse').on('click', function() {
+							// Toggle user info visibility
+							if (isUserInfoVisible) {
+								$('#userInfo').hide();
+							} else {
+								$('#userInfo').show();
+							}
+							
+							// Update the state of user info visibility
+							isUserInfoVisible = !isUserInfoVisible;
+						});
+					});
+				</script>
 
 <?php include_once 'footer.php'; ?>

@@ -53,6 +53,26 @@
 						});
 					});
 				});
+
+				
+				$(document).ready(function() {
+					// Set initial state for user info visibility
+					var isUserInfoVisible = true;
+					
+					// Listen for click event on sidebar-collapse button
+					$('#sidebar-collapse').on('click', function() {
+						// Toggle user info visibility
+						if (isUserInfoVisible) {
+							$('#userInfo').hide();
+						} else {
+							$('#userInfo').show();
+						}
+						
+						// Update the state of user info visibility
+						isUserInfoVisible = !isUserInfoVisible;
+					});
+				});
+				
 		</script>
 	</body>
   
