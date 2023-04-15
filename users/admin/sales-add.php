@@ -4,6 +4,22 @@
 			<nav id="sidebar">
 				<div class="sidebar-header">
 					<img src="../../assets/images/logo.png" class="img-fluid"/>
+                    <?php 
+						
+						$admin = $_SESSION['admin_name'];
+						$sql1 = "SELECT * FROM (users INNER JOIN branches ON users.branch_id = branches.branch_id) WHERE username = '$admin'";
+						$result = $conn->query($sql1);
+						while($row = $result->fetch_assoc()) {
+							$branch = $row['branch_description'];
+							$name = $row['first_name'] . " " . $row['last_name'];
+							$role = $row['role'];
+						
+					?>
+
+					<div class="ml-auto" id="userInfo">
+						<p class="text-right"><?php echo $name . " | " . $role; ?></p>
+						<p class="text-right"><?php echo $branch; } ?></p>
+					</div>
 				</div>
 				<ul class="list-unstyled components">
 					<li class="">
@@ -142,12 +158,10 @@
                                 <input type="text" name="date" readonly value="<?php echo date("Y-m-d"); ?>" class="form-control">
                             </div>
                             <div class="col-md-2">
-                                <label>User: </label>
-                                <input type="text" name="user" readonly value="<?php echo $user_id; ?>" class="form-control">
+                                <input type="text" name="user" readonly hidden value="<?php echo $user_id; ?>" class="form-control">
                             </div>
                             <div class="col-md-2">
-                                <label>Branch: </label>
-                                <input type="text" name="branch" readonly value="<?php echo $branch_id; ?>" class="form-control">
+                                <input type="text" name="branch" readonly hidden value="<?php echo $branch_id; ?>" class="form-control">
                             </div>
                         </div>
 
@@ -157,8 +171,7 @@
                             <div class="col-md-4">
                             </div>
                             <div class="col-md-4">
-                                <label>Status:</label>
-                                <select name="status" class="form-select">
+                                <select name="status" class="form-select" hidden>
                                     <option selected hidden value="">Select Here... </option>
                                     <?php 
                                         include '../../includes/config.php';

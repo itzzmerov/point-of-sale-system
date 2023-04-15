@@ -4,6 +4,22 @@
 			<nav id="sidebar">
 				<div class="sidebar-header">
 					<img src="../../assets/images/logo.png" class="img-fluid"/>
+					<?php 
+						
+						$admin = $_SESSION['admin_name'];
+						$sql1 = "SELECT * FROM (users INNER JOIN branches ON users.branch_id = branches.branch_id) WHERE username = '$admin'";
+						$result = $conn->query($sql1);
+						while($row = $result->fetch_assoc()) {
+							$branch = $row['branch_description'];
+							$name = $row['first_name'] . " " . $row['last_name'];
+							$role = $row['role'];
+						
+					?>
+
+					<div class="ml-auto" id="userInfo">
+						<p class="text-right"><?php echo $name . " | " . $role; ?></p>
+						<p class="text-right"><?php echo $branch; } ?></p>
+					</div>
 				</div>
 				<ul class="list-unstyled components">
 					<li class="active">
@@ -155,6 +171,21 @@
 
 								<?php 
 									include '../../includes/config.php';
+
+									$monthWords = array(
+										'01' => 'January',
+										'02' => 'February',
+										'03' => 'March',
+										'04' => 'April',
+										'05' => 'May',
+										'06' => 'June',
+										'07' => 'July',
+										'08' => 'August',
+										'09' => 'September',
+										'10' => 'October',
+										'11' => 'November',
+										'12' => 'December'
+									);
 									
 									$admin = $_SESSION['admin_name'];
 									$sql1 = "SELECT * FROM users WHERE username = '$admin'";
@@ -163,7 +194,10 @@
 										$branch = $row['branch_id'];
 									}
 
-									$sql = "SELECT SUM(subtotal_amount) AS total_amount FROM sales WHERE branch_id = '$branch'";
+									$currentMonth = date('m');
+									$currentMonthWord = $monthWords[$currentMonth];
+
+									$sql = "SELECT SUM(subtotal_amount) AS total_amount FROM sales WHERE MONTH(invoice_date) = '$currentMonth' AND branch_id = '$branch'";
 									$result = $conn->query($sql);
 									
 									if ($result->num_rows > 0) {
@@ -173,7 +207,7 @@
 								?>
 
 								<div class="card-content">
-									<p class="category"><strong>Total Sales</strong></p>
+									<p class="category"><strong>Sales (<?php echo $currentMonthWord; ?>)</strong></p>
 									<h4 class="card-title">₱<?php echo $row['total_amount']; ?></h4>
 								<?php 
 										}
@@ -220,7 +254,7 @@
 								?>
 
 								<div class="card-content">
-									<p class="category"><strong>Expenses</strong></p>
+									<p class="category"><strong>Expenses (<?php echo $currentMonthWord; ?>)</strong></p>
 									<h4 class="card-title">₱<?php echo number_format($row['total_amount']); ?></h4>
 								</div>
 
@@ -295,7 +329,7 @@
 						<div class="col-lg-7 col-md-18">
 							<div class="card" style="min-height:485px">
 								<div class="card-header card-header-text">
-									<h4 class="card-title">Total Sales (Line Chart)</h4>
+									<h4 class="card-title">Total Sales (<?php echo $currentMonthWord; ?>)</h4>
 								</div>
 
 								<div class="filter pull-right" style="margin: 20px;">

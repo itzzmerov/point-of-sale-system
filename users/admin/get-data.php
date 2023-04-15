@@ -16,7 +16,7 @@ switch ($filter) {
         break;
     case 'yearly':
         $date_format = '%b';
-        $interval = '1 MONTH';
+        $interval = '1 MONTH'; 
         break;
     default: // weekly
         $date_format = '%a %d';
@@ -35,9 +35,11 @@ while($row = $result->fetch_assoc()) {
     $branch = $row['branch_id'];
 }
 
+$currentMonth = date('m');
+
 $sql = "SELECT DATE_FORMAT(invoice_date, '{$date_format}') AS date, SUM(subtotal_amount) AS total_sales
         FROM sales
-        WHERE branch_id = '$branch'
+        WHERE MONTH(invoice_date) = '$currentMonth' AND branch_id = '$branch'
         GROUP BY date
         ORDER BY invoice_date ASC";
 $result = mysqli_query($conn, $sql);

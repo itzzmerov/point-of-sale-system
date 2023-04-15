@@ -4,7 +4,7 @@
 			<nav id="sidebar">
 				<div class="sidebar-header">
 					<img src="../../assets/images/logo.png" class="img-fluid"/>
-					<?php 
+                    <?php 
 						
 						$admin = $_SESSION['admin_name'];
 						$sql1 = "SELECT * FROM (users INNER JOIN branches ON users.branch_id = branches.branch_id) WHERE username = '$admin'";
@@ -24,6 +24,7 @@
 				<ul class="list-unstyled components">
 					<li class="">
 						<a href="index.php" class="dashboard"><i class="material-icons">dashboard</i><span>Dashboard</span></a>
+                       
 					</li>
 						
 					<li class="dropdown">
@@ -38,7 +39,7 @@
 							</li>
 						</ul>
 					</li>
-					<li class="dropdown active">
+					<li class="dropdown">
 						<a href="#pageSubmenu2" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
 						<i class="material-icons">inventory</i><span>Products</span></a>
 						<ul class="collapse list-unstyled menu" id="pageSubmenu2">
@@ -63,6 +64,18 @@
 						</ul>
 					</li>
 					<li class="dropdown">
+						<a href="#pageSubmenu4" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+						<i class="material-icons">local_shipping</i><span>Branches</span></a>
+						<ul class="collapse list-unstyled menu" id="pageSubmenu4">
+							<li>
+								<a href="branches-add.php">Add New Branch</a>
+							</li>
+							<li>
+								<a href="branches-manage.php">Manage Branches</a>
+							</li>
+						</ul>
+					</li>
+					<li class="dropdown">
 						<a href="#pageSubmenu5" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
 						<i class="material-icons">payments</i><span>Expenses</span></a>
 						<ul class="collapse list-unstyled menu" id="pageSubmenu5">
@@ -77,7 +90,7 @@
 					<li class="">
 						<a href="charts.php" class="dashboard"><i class="material-icons">equalizer</i><span>Charts</span></a>
 					</li>
-					<li class="">
+					<li class="active">
 						<a href="reports.php" class="dashboard"><i class="material-icons">summarize</i><span>Reports</span></a>
 					</li>
 					<li class="dropdown">
@@ -106,7 +119,7 @@
 						<span class="material-icons"></span>
 						</button>
 						
-						<a class="navbar-brand" href="#">Edit Product</a>
+						<a class="navbar-brand" href="#">Reports</a>
 						<button class="d-inline-block d-lg-none ml-auto more-button" type="button" data-toggle="collapse"
 						data-target="#navbarcollapse" aria-controls="navbarcollapse" aria-expanded="false" aria-label="Toggle">
 							<span class="material-icons">menu</span>
@@ -115,95 +128,96 @@
 					</nav>
 				</div>
 
-                <!-- PHP UPDATING DATABASE for PRODUCTS -->
-
-                <?php 
-                    require_once '../../includes/config.php';
-
-                    if(isset($_POST['update'])) {
-                        $id = $_GET['id'];
-
-                        $name = $_POST['name'];
-						$category = $_POST['category'];
-						$price = $_POST['price'];
-
-                        $sql = mysqli_query($conn, "UPDATE products SET name='$name', category_id='$category', price='$price' WHERE product_id='$id'");
-                        if($sql) {
-                            echo "<script>alert('You have successfully updated the record!');</script>";
-                            echo "<script>document.location='products-manage.php';</script>";
-                        }
-                    }
-                ?>
-
-                <!--MAIN CONTENT HERE!!!!!!!!-->
-                <div class="container">
-					<div class="row" style="margin: 0 20px;">
+				<!-- MAIN CONTENT -->
+				<div class="container">
+					<div class="row">
 						<div class="col-md-12">
 							<br /><br />
-							<h2>Update Product Information</h2>
+							<h2 style="margin: 0 20px;">Sales Report</h2>
+							<br />
 						</div>
 					</div>
+					<table id="example" class="table display nowrap" style="width:100%">
+						<thead class="thead-dark">
+							<tr>
+								<th scope="col">Invoice No.</th>
+								<th scope="col">Qty</th>
+								<th scope="col">Name</th>
+								<th scope="col">Category</th>
+								<th scope="col">SRP</th>
+								<th scope="col">Disc</th>
+								<th scope="col">Subtotal</th>
+								<th scope="col">S. R.</th>
+							</tr>
+						</thead>
+						<tbody> 
+							<?php 
 
-					<!-- FORM FOR ADDING USERS --> 
-					<form method="POST" style="margin: 0 20px;">
+								include '../../includes/config.php';
 
-                        <?php 
+								$admin = $_SESSION['admin_name'];
+								$sql1 = "SELECT * FROM users WHERE username = '$admin'";
+								$result = $conn->query($sql1);
+								while($row = $result->fetch_assoc()) {
+									$branch = $row['branch_id'];
+								}
 
-                            $id = $_GET['id'];
-                            $sql1 = mysqli_query($conn, "SELECT * FROM (products INNER JOIN categories ON products.category_id = categories.category_id) WHERE product_id = '$id'");
+								$sql = "SELECT * FROM ((((sales INNER JOIN users ON sales.user_id = users.user_id) INNER JOIN branches ON sales.branch_id = branches.branch_id) INNER JOIN products ON sales.product_id = products.product_id) INNER JOIN categories ON sales.category_id = categories.category_id) WHERE sales.branch_id = '$branch' ORDER BY invoice_number";
+								$result = mysqli_query($conn, $sql);
 
-                            while ($row = mysqli_fetch_array($sql1)) {
+								$currentInvoiceNumber = null;
+								$total = 0;
 
-                            
-                        ?>
-						<br /><br />
-						<h4>Product Information: </h4>
+								while($row = mysqli_fetch_assoc($result)) {
 
-						<div class="row">
-							<div class="col-md-12">
-								<label>Name:</label>
-								<input type="text" name="name" value="<?php echo $row['name']; ?>" class="form-control" required>
-							</div>
-						</div>
-						<div class="row">
-							<div class="col-md-6">
-								<label>Category:</label>
-								<select class='form-select' name='category' required>
-									<option selected hidden value="<?php echo $row['category_id']; ?>"><?php echo $row['category_description']; } ?></option>
-									<?php 
-
-										$sql2 = "SELECT * FROM categories";
-										$result = $conn->query($sql2);
-
-										while ($row = $result->fetch_assoc()) {
-											echo "<option value='" . $row["category_id"] . "'>" . $row["category_description"] . "</option>";
-										}
-									?>
-								</select>
-							</div>
-                            <div class="col-md-6">
-                                <label>Price:</label>
-                                <?php 
-
-                                    $id = $_GET['id'];
-                                    $sql6 = mysqli_query($conn, "SELECT * FROM products WHERE product_id = '$id'");
-
-                                    while ($row = mysqli_fetch_array($sql6)) {
-                                ?>
-                                <input type="text" name="price" value="<?php echo $row['price']; } ?>" class="form-control" required>
-                            </div>
-						</div>
-
-						<!-- BUTTONS FOR ADDING USERS --> 
-						<div class="row" style="margin-top: 1%;">
-							<div class="col-md-12 d-flex justify-content-end">
-								<button type="text" name="update" class="btn btn-success">Update</button> &nbsp;&nbsp;&nbsp;
-								<a href="products-manage.php" class="btn btn-danger">Cancel</a>
-							</div>
-						</div><br />
-
-					</form>
+									// Add the row data to the table
+									echo "<tr>";
+									echo "<td><strong>".$row['invoice_number']."</strong></td>";
+									echo "<td>".$row['quantity']."</td>";
+									echo "<td>".$row['name']."</td>";
+									echo "<td>".$row['category_description']."</td>";
+									echo "<td>".$row['price']."</td>";
+									echo "<td>".$row['discount']."</td>";
+									echo "<td>".$row['subtotal_amount']."</td>";
+									echo "<td>". substr($row['first_name'], 0, 1). ". " . substr($row['last_name'], 0, 1) .".</td>";
+									echo "</tr>";
+								}
+								
+								mysqli_close($conn);
+							?>
+						</tbody>
+					</table>
 				</div>
+				<script>
+					$(document).ready(function() {
+						$('#example').DataTable( {
+							dom: 'Bfrtip',
+							buttons: [
+								'copy', 'csv', 'excel', 'pdf', 'print'
+							]
+						} );
+					});
+
+					
+					$(document).ready(function() {
+						// Set initial state for user info visibility
+						var isUserInfoVisible = true;
+						
+						// Listen for click event on sidebar-collapse button
+						$('#sidebar-collapse').on('click', function() {
+							// Toggle user info visibility
+							if (isUserInfoVisible) {
+								$('#userInfo').hide();
+							} else {
+								$('#userInfo').show();
+							}
+							
+							// Update the state of user info visibility
+							isUserInfoVisible = !isUserInfoVisible;
+						});
+					});
+				
+				</script>
 
 
 <?php include_once 'footer.php'; ?>

@@ -4,6 +4,22 @@
 			<nav id="sidebar">
 				<div class="sidebar-header">
 					<img src="../../assets/images/logo.png" class="img-fluid"/>
+					<?php 
+						
+						$admin = $_SESSION['admin_name'];
+						$sql1 = "SELECT * FROM (users INNER JOIN branches ON users.branch_id = branches.branch_id) WHERE username = '$admin'";
+						$result = $conn->query($sql1);
+						while($row = $result->fetch_assoc()) {
+							$branch = $row['branch_description'];
+							$name = $row['first_name'] . " " . $row['last_name'];
+							$role = $row['role'];
+						
+					?>
+
+					<div class="ml-auto" id="userInfo">
+						<p class="text-right"><?php echo $name . " | " . $role; ?></p>
+						<p class="text-right"><?php echo $branch; } ?></p>
+					</div>
 				</div>
 				<ul class="list-unstyled components">
 					<li class="">

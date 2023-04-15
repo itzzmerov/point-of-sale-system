@@ -166,17 +166,16 @@
                                 $conn->close();
 
                             ?>
+                            
+                            <div class="col-md-2">
+                                <input type="text" name="user" readonly hidden value="<?php echo $user_id; ?>" class="form-control">
+                            </div>
+                            <div class="col-md-2">
+                                <input type="text" name="branch" readonly hidden value="<?php echo $branch_id; ?>" class="form-control">
+                            </div>
                             <div class="col-md-4">
                                 <label>Date: </label>
                                 <input type="text" name="date" readonly value="<?php echo date("Y-m-d"); ?>" class="form-control">
-                            </div>
-                            <div class="col-md-2">
-                                <label>User: </label>
-                                <input type="text" name="user" readonly value="<?php echo $user_id; ?>" class="form-control">
-                            </div>
-                            <div class="col-md-2">
-                                <label>Branch: </label>
-                                <input type="text" name="branch" readonly value="<?php echo $branch_id; ?>" class="form-control">
                             </div>
                         </div>
 
@@ -186,8 +185,8 @@
                             <div class="col-md-4">
                             </div>
                             <div class="col-md-4">
-                                <label>Status:</label>
-                                <select name="status" class="form-select">
+                                
+                                <select name="status" class="form-select" hidden>
                                     <option selected hidden value="">Select Here... </option>
                                     <?php 
                                         include '../../includes/config.php';
