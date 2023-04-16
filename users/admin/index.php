@@ -329,7 +329,7 @@
 						<div class="col-lg-7 col-md-18">
 							<div class="card" style="min-height:485px">
 								<div class="card-header card-header-text">
-									<h4 class="card-title">Total Sales (<?php echo $currentMonthWord; ?>)</h4>
+									<h4 class="card-title">Total Sales</h4>
 								</div>
 
 								<div class="filter pull-right" style="margin: 20px;">

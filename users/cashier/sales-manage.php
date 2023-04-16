@@ -67,19 +67,6 @@
 					</nav>
 				</div>  
 
-                <!-- PHP for DELETING SALES -->
-                <?php
-					require_once '../../includes/config.php';
-
-					if(isset($_GET['delid'])) {
-						$id = intval($_GET['delid']);
-						$sql = mysqli_query($conn, "DELETE FROM sales WHERE invoice_id = '$id'");
-
-						echo "<script>alert('Record has been successfully deleted!');</script>";
-						echo "<script>window.location='sales-manage.php';</script>";
-					}
-				?>
-
                 <!--MAIN CONTENT HERE!!!!!!!!-->
 				<div class="container">
 
@@ -109,7 +96,6 @@
                                         <th>Price</th>
                                         <th>Discount</th>
                                         <th>SubTotal</th>
-                                        <th>Actions</th>
                                     </thead>
                                     <tbody id="myTable">
 
@@ -158,10 +144,6 @@
                                             <td><?php echo $row['price']; ?></td>
                                             <td><?php echo $row['discount']; ?></td>
                                             <td><?php echo $row['subtotal_amount']; ?></td>
-                                            <td>
-                                                <a href="sales-edit.php?id=<?php echo htmlentities($row['invoice_id']); ?>" class="btn btn-primary btn-sm"> Edit </a>
-                                                <a href="sales-manage.php?delid=<?php echo htmlentities($row['invoice_id']); ?>" onclick="return confirm('Do you really want to delete this record?');" class="btn btn-danger btn-sm"> Delete </a>
-                                            </td>
                                         </tr>
 
                                         <?php

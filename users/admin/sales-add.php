@@ -123,6 +123,7 @@
                             <h2 style="margin: 0 20px;">Add New Sale</h2>
                         </div>
                     </div>
+                    
                     <!-- Display the table for adding new sales -->
 					<form method="POST" action="sales-create-sales.php" style="margin: 0 20px;">
 

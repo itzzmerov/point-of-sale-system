@@ -35,11 +35,9 @@ while($row = $result->fetch_assoc()) {
     $branch = $row['branch_id'];
 }
 
-$currentMonth = date('m');
-
 $sql = "SELECT DATE_FORMAT(invoice_date, '{$date_format}') AS date, SUM(subtotal_amount) AS total_sales
         FROM sales
-        WHERE MONTH(invoice_date) = '$currentMonth' AND branch_id = '$branch'
+        WHERE branch_id = '$branch'
         GROUP BY date
         ORDER BY invoice_date ASC";
 $result = mysqli_query($conn, $sql);

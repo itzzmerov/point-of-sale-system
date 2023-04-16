@@ -121,19 +121,13 @@
                     if(isset($_POST['update'])) {
                         $id = $_GET['id'];
 
-						$imei = $_POST['imei'];
-						$model_description = $_POST['model_description'];
 						$quantity = $_POST['quantity'];
 						$price = $_POST['price'];
 						$subtotal_amount = $_POST['subtotal_amount'];
-						$commission = $subtotal_amount * 0.01;
-						$discount = $_POST['discount'];
-						$status_id = $_POST['status_id'];
-                        $payment_id = $_POST['payment_id'];
+						$discount = $_POST['discount'];            
                         $invoice_date = $_POST['invoice_date'];
 
-                        $sql = mysqli_query($conn, "UPDATE sales SET imei='$imei', model_description='$model_description', quantity='$quantity', price='$price', subtotal_amount='$subtotal_amount', 
-                        commission='$commission', discount='$discount', status_id='$status_id', payment_id='$payment_id', invoice_date='$invoice_date' WHERE invoice_id='$id'");
+                        $sql = mysqli_query($conn, "UPDATE sales SET quantity='$quantity', subtotal_amount='$subtotal_amount', discount='$discount', invoice_date='$invoice_date' WHERE invoice_id='$id'");
                         if($sql) {
                             echo "<script>alert('You have successfully updated the record!');</script>";
                             echo "<script>document.location='sales-manage.php';</script>";
