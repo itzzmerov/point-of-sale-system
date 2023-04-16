@@ -166,8 +166,8 @@
 								<table class="table table-bordered table-striped">
 									<thead>
 										<th>#</th>
+										<th>Branch</th>
 										<th>Role</th>
-										<th>Username</th>
 										<th>First Name</th>
 										<th>Last Name</th>
 										<th>Phone Number</th>
@@ -199,7 +199,7 @@
 
 
 
-											$sql = mysqli_query($conn, "SELECT * FROM users LIMIT $offset, $total_records_per_page");
+											$sql = mysqli_query($conn, "SELECT * FROM users INNER JOIN branches ON users.branch_id = branches.branch_id LIMIT $offset, $total_records_per_page");
 											$count = 1;
 											$row = mysqli_num_rows($sql);
 											if ($row > 0) {
@@ -209,8 +209,8 @@
 
 										<tr>
 											<td><?php echo $count; ?></td>
+											<td><?php echo $row['branch_description']; ?></td>
 											<td><?php echo $row['role']; ?></td>
-											<td><?php echo $row['username']; ?></td>
 											<td><?php echo $row['first_name']; ?></td>
 											<td><?php echo $row['last_name']; ?></td>
 											<td><?php echo $row['phone_number']; ?></td>

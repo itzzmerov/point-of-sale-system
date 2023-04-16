@@ -6,7 +6,7 @@
 					<img src="../../assets/images/logo.png" class="img-fluid"/>
 					<?php 
 						
-						$admin = $_SESSION['accountant_name'];
+						$admin = $_SESSION['cashier_name'];
 						$sql1 = "SELECT * FROM (users INNER JOIN branches ON users.branch_id = branches.branch_id) WHERE username = '$admin'";
 						$result = $conn->query($sql1);
 						while($row = $result->fetch_assoc()) {
@@ -24,6 +24,19 @@
 				<ul class="list-unstyled components">
 					<li class="active">
 						<a href="index.php" class="dashboard"><i class="material-icons">dashboard</i><span>Dashboard</span></a>
+					</li>
+						
+					<li class="dropdown">
+						<a href="#homeSubmenu1" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+						<i class="material-icons">point_of_sale</i><span>Sales</span></a>
+						<ul class="collapse list-unstyled menu" id="homeSubmenu1">
+							<li>
+								<a href="sales-add.php">Add New Sale</a>
+							</li>
+							<li>
+								<a href="sales-manage.php">Manage Sales</a>
+							</li>
+						</ul>
 					</li>
 					<li class="">
 						<a href="charts.php" class="dashboard"><i class="material-icons">equalizer</i><span>Charts</span></a>
@@ -50,11 +63,13 @@
 						data-target="#navbarcollapse" aria-controls="navbarcollapse" aria-expanded="false" aria-label="Toggle">
 							<span class="material-icons">menu</span>
 						</button>
+						
 					</nav>
 				</div>	  
 				
 				<!--DASHBOARD CONTENT-->
 				<div class="main-content">
+
 					<div class="row">
 						<div class="col-lg-3 col-md-6 col-sm-6">
 							<div class="card card-stats">
@@ -109,7 +124,33 @@
 								<?php 
 									include '../../includes/config.php';
 
-									$sql = "SELECT SUM(subtotal_amount) AS total_amount FROM sales";
+									$monthWords = array(
+										'01' => 'January',
+										'02' => 'February',
+										'03' => 'March',
+										'04' => 'April',
+										'05' => 'May',
+										'06' => 'June',
+										'07' => 'July',
+										'08' => 'August',
+										'09' => 'September',
+										'10' => 'October',
+										'11' => 'November',
+										'12' => 'December'
+									);
+									
+									$admin = $_SESSION['cashier_name'];
+									$sql1 = "SELECT * FROM users WHERE username = '$admin'";
+									$result = $conn->query($sql1);
+									while($row = $result->fetch_assoc()) {
+										$branch = $row['branch_id'];
+										$user_id = $row['user_id'];
+									}
+
+									$currentMonth = date('m');
+									$currentMonthWord = $monthWords[$currentMonth];
+
+									$sql = "SELECT SUM(subtotal_amount) AS total_amount FROM sales WHERE (MONTH(invoice_date) = '$currentMonth' AND branch_id = '$branch') AND user_id = '$user_id'";
 									$result = $conn->query($sql);
 									
 									if ($result->num_rows > 0) {
@@ -119,7 +160,7 @@
 								?>
 
 								<div class="card-content">
-									<p class="category"><strong>Total Sales</strong></p>
+									<p class="category"><strong>Sales (<?php echo $currentMonthWord; ?>)</strong></p>
 									<h4 class="card-title">₱<?php echo $row['total_amount']; ?></h4>
 								<?php 
 										}
@@ -149,7 +190,14 @@
 								<?php 
 									include '../../includes/config.php';
 
-									$sql = "SELECT SUM(amount) AS total_amount FROM expenses";
+									$admin = $_SESSION['cashier_name'];
+									$sql1 = "SELECT * FROM users WHERE username = '$admin'";
+									$result = $conn->query($sql1);
+									while($row = $result->fetch_assoc()) {
+										$branch = $row['branch_id'];
+									}
+
+									$sql = "SELECT SUM(amount) AS total_amount FROM expenses WHERE branch_id = '$branch'";
 									$result = $conn->query($sql);
 									
 									if ($result->num_rows > 0) {
@@ -159,7 +207,7 @@
 								?>
 
 								<div class="card-content">
-									<p class="category"><strong>Expenses</strong></p>
+									<p class="category"><strong>Expenses (<?php echo $currentMonthWord; ?>)</strong></p>
 									<h4 class="card-title">₱<?php echo number_format($row['total_amount']); ?></h4>
 								</div>
 
@@ -190,7 +238,15 @@
 								<?php 
 									include '../../includes/config.php';
 
-									$sql = "SELECT COUNT(user_id) AS total_users FROM users";
+									$admin = $_SESSION['cashier_name'];
+									$sql1 = "SELECT * FROM users WHERE username = '$admin'";
+									$result = $conn->query($sql1);
+									while($row = $result->fetch_assoc()) {
+										$branch = $row['branch_id'];
+										$user_id = $row['user_id'];
+									}
+
+									$sql = "SELECT COUNT(user_id) AS total_users FROM users WHERE branch_id = '$branch' AND user_id = '$user_id'";
 									$result = $conn->query($sql);
 									
 									if ($result->num_rows > 0) {
@@ -227,7 +283,7 @@
 						<div class="col-lg-7 col-md-18">
 							<div class="card" style="min-height:485px">
 								<div class="card-header card-header-text">
-									<h4 class="card-title">Total Sales (Line Chart)</h4>
+									<h4 class="card-title">Total Sales (<?php echo $currentMonthWord; ?>)</h4>
 								</div>
 
 								<div class="filter pull-right" style="margin: 20px;">

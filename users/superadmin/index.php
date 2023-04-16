@@ -195,7 +195,7 @@
 
 								<div class="card-content">
 									<p class="category"><strong>Total Sales</strong></p>
-									<h4 class="card-title">₱<?php echo $row['total_amount']; ?></h4>
+									<h4 class="card-title">₱<?php echo number_format($row['total_amount']); ?></h4>
 								<?php 
 										}
 									}

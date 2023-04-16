@@ -133,14 +133,11 @@
 						$province = $_POST['province'];
 						$country = $_POST['country'];
 						$zipcode = $_POST['zipcode'];
-						$branch = $_POST['branch'];
 						$role = $_POST['role'];
 						$username = $_POST['username'];
 						$email = $_POST['email'];
-						$password = $_POST['password'];
-						$password = md5($password);
 
-                        $sql = mysqli_query($conn, "UPDATE users SET first_name='$first_name', middle_name='$middle_name', last_name='$last_name', sex='$sex', birthdate='$birthdate', phone_number='$phone_number', street_address='$street_address', barangay='$barangay', city='$city', province='$province', country='$country', zipcode='$zipcode', role='$role', username='$username', email='$email', password='$password', branch_id='$branch' WHERE user_id='$id'");
+                        $sql = mysqli_query($conn, "UPDATE users SET first_name='$first_name', middle_name='$middle_name', last_name='$last_name', sex='$sex', birthdate='$birthdate', phone_number='$phone_number', street_address='$street_address', barangay='$barangay', city='$city', province='$province', country='$country', zipcode='$zipcode', role='$role', username='$username', email='$email' WHERE user_id='$id'");
                         if($sql) {
                             echo "<script>alert('You have successfully updated the record!');</script>";
                             echo "<script>document.location='users-manage.php';</script>";
@@ -238,33 +235,12 @@
 							</div>
 							<div class="col-md-4">
 								<label>Postal Code:</label>
-								<input type="text" name="zipcode" class="form-control" value="<?php echo $row['zipcode']; ?>" required>
+								<input type="text" name="zipcode" class="form-control" value="<?php echo $row['zipcode']; } ?>" required>
 							</div>
 						</div>
 
 						<br />
 						<h4>Account Information: </h4>
-
-						<div class="row">
-							<div class="col-md-6">
-								<label>Branch:</label>
-								<select class="form-select" name="branch" id="branch" required>
-									<option selected hidden value="<?php echo $row['branch_id']; ?>"><?php echo $row['branch_description']; } ?></option>
-									<?php 
-									
-										require_once '../../includes/config.php';
-
-										$sql1 = "SELECT * FROM branches WHERE branch_status=1";
-										$result = mysqli_query($conn, $sql1);
-
-										while ($row = mysqli_fetch_array($result)) {
-											echo "<option value='" . $row["branch_id"] . "'>" . $row["branch_description"] . "</option>";
-										}
-									?>
-								</select>
-								
-							</div>
-						</div>
 
 						<div class="row">
 							<div class="col-md-6">
@@ -313,10 +289,6 @@
 							<div class="col-md-6">
 								<label>Email Address:</label>
 								<input type="text" name="email" class="form-control" value="<?php echo $row['email'] ?>" required>
-							</div>
-							<div class="col-md-6">
-								<label>Password:</label>
-								<input type="password" name="password" class="form-control" value="<?php echo $row['password'] ?>" required>
 							</div>
 						</div><br />
                         
