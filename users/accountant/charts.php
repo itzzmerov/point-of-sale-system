@@ -53,6 +53,14 @@
 					</nav>
 				</div>	
 
+                <div class="row">
+                    <div class="col-md-12">
+                        <br /><br />
+                        <h2 style="margin: 0 20px;">Total Sales per Branch</h2>
+                        <br />
+                    </div>
+				</div>
+
                 <div style="max-width: 800px; margin: 0 auto;">
                     <canvas id="branchSalesChart"></canvas>
                 </div>
