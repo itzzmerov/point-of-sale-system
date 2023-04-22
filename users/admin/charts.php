@@ -4,9 +4,9 @@
 			<nav id="sidebar">
 				<div class="sidebar-header">
 					<img src="../../assets/images/logo.png" class="img-fluid"/>
-					<?php 
-						
-						$admin = $_SESSION['superadmin_name'];
+                    <?php 
+						 
+						$admin = $_SESSION['admin_name'];
 						$sql1 = "SELECT * FROM (users INNER JOIN branches ON users.branch_id = branches.branch_id) WHERE username = '$admin'";
 						$result = $conn->query($sql1);
 						while($row = $result->fetch_assoc()) {
@@ -24,7 +24,6 @@
 				<ul class="list-unstyled components">
 					<li class="">
 						<a href="index.php" class="dashboard"><i class="material-icons">dashboard</i><span>Dashboard</span></a>
-						
 					</li>
 						
 					<li class="dropdown">
@@ -51,7 +50,7 @@
 							</li>
 						</ul>
 					</li>
-					<li class="dropdown">
+					<li class="dropdown ">
 						<a href="#pageSubmenu3" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
 						<i class="material-icons">group</i><span>Categories</span></a>
 						<ul class="collapse list-unstyled menu" id="pageSubmenu3">
@@ -60,18 +59,6 @@
 							</li>
 							<li>
 								<a href="categories-manage.php">Manage Categories</a>
-							</li>
-						</ul>
-					</li>
-					<li class="dropdown">
-						<a href="#pageSubmenu4" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
-						<i class="material-icons">local_shipping</i><span>Branches</span></a>
-						<ul class="collapse list-unstyled menu" id="pageSubmenu4">
-							<li>
-								<a href="branches-add.php">Add New Branch</a>
-							</li>
-							<li>
-								<a href="branches-manage.php">Manage Branches</a>
 							</li>
 						</ul>
 					</li>
@@ -117,7 +104,7 @@
 						<span class="material-icons"></span>
 						</button>
 						
-						<a class="navbar-brand" href="#">Add New Branch</a>
+						<a class="navbar-brand" href="#">Manage Categories</a>
 						<button class="d-inline-block d-lg-none ml-auto more-button" type="button" data-toggle="collapse"
 						data-target="#navbarcollapse" aria-controls="navbarcollapse" aria-expanded="false" aria-label="Toggle">
 							<span class="material-icons">menu</span>
@@ -323,5 +310,6 @@
                     }
                     });
                 </script>
+
 
 <?php include_once 'footer.php'; ?>

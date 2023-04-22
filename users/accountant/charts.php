@@ -53,37 +53,71 @@
 					</nav>
 				</div>	
 
-                <div class="row">
-                    <div class="col-md-12">
-                        <br /><br />
-                        <h2 style="margin: 0 20px;">Total Sales per Branch</h2>
-                        <br />
-                    </div>
-				</div>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <br /><br />
+                            <h2 style="margin: 0 20px;">Total Sales per Branch</h2>
+                            <br />
+                        </div>
+                        <!-- TOTAL SALES CHART -->
+                        <?php
+                            // Fetch data from 'sales' table using your database connection
+                            include '../../includes/config.php';
 
-                <div style="max-width: 800px; margin: 0 auto;">
-                    <canvas id="branchSalesChart"></canvas>
+                            // Query to fetch sales data with branch descriptions and total sales
+                            $sql = "SELECT branch_description, invoice_date, SUM(subtotal_amount) AS total_sales FROM sales INNER JOIN branches ON sales.branch_id = branches.branch_id GROUP BY branches.branch_id, MONTH(sales.invoice_date)";
+                            $result = mysqli_query($conn, $sql);
+
+                            // Fetch data into an associative array
+                            $data = array();
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                $data[] = $row;
+                            }
+
+                            // Close database connection
+                            mysqli_close($conn);
+                        ?>
+
+                        <div style="max-width: 800px; margin: 0 auto;">
+                            <canvas id="branchSalesChart" style="background-color: #fff;"></canvas>
+                        </div>
+                    </div>
+
+                    
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <br /><br />
+                            <h2 style="margin: 0 20px;">Total Expenses
+                        </div>
+                            <!-- TOTAL EXPENSES CHART -->
+                            <?php
+                            // Fetch data from 'sales' table using your database connection
+                            include '../../includes/config.php';
+
+                            // Query to fetch sales data with branch descriptions and total sales
+                            $sql1 = "SELECT branch_description, date, SUM(amount) AS total_expenses FROM expenses INNER JOIN branches ON expenses.branch_id = branches.branch_id GROUP BY expenses.branch_id, MONTH(expenses.date)";
+                            $result = mysqli_query($conn, $sql1);
+
+                            // Fetch data into an associative array
+                            $dataExpenses = array();
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                $dataExpenses[] = $row;
+                            }
+
+                            // Close database connection
+                            mysqli_close($conn);
+                        ?>
+
+                        <div style="max-width: 800px; margin: 0 auto;">
+                            <canvas id="branchExpensesChart" style="background-color: #fff;"></canvas>
+                        </div>
+                    </div>
                 </div>
 
-                <?php
-                    // Fetch data from 'sales' table using your database connection
-                    include '../../includes/config.php';
-
-                    // Query to fetch sales data with branch descriptions and total sales
-                    $sql = "SELECT branch_description, invoice_date, SUM(subtotal_amount) AS total_sales FROM sales INNER JOIN branches ON sales.branch_id = branches.branch_id GROUP BY branches.branch_id, MONTH(sales.invoice_date)";
-                    $result = mysqli_query($conn, $sql);
-
-                    // Fetch data into an associative array
-                    $data = array();
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        $data[] = $row;
-                    }
-
-                    // Close database connection
-                    mysqli_close($conn);
-                ?>
-
                 <script>
+					/////////// TOTAL SALES CHART SCRIPT ///////////////
                     // Convert PHP data to JavaScript data for Chart.js
                     var salesData = <?php echo json_encode($data); ?>;
 
@@ -125,6 +159,73 @@
                     type: 'line',
                     data: {
                         labels: salesMonths, // Use the salesMonths array for x-axis labels
+                        datasets: datasets
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                        x: {
+                            display: true,
+                            title: {
+                            display: true,
+                            text: 'Month' // Add x-axis title
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: {
+                            display: true,
+                            text: 'Total Sales' // Add y-axis title
+                            },
+                            beginAtZero: true,
+                            suggestedMax: 5000 // Update suggested max value for y-axis
+                        }
+                        }
+                    }
+                    });
+
+					/////////// EXPENSES CHART SCRIPT ///////////////
+					// Convert PHP data to JavaScript data for Chart.js
+                    var expensesData = <?php echo json_encode($dataExpenses); ?>;
+
+                    // Extract branch descriptions and sales data from data
+                    var branchLabels = Array.from(new Set(expensesData.map(function(item) {
+                    return item.branch_description;
+                    })));
+
+                    var expensesDataByBranch = branchLabels.map(function(branch) {
+                    return expensesData.filter(function(item) {
+                        return item.branch_description === branch;
+                    });
+                    });
+
+                    // Define an array of colors for the lines
+                    var lineColors = ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'];
+
+                    // Create datasets for each branch with different colors
+                    var datasets = [];
+                    var expensesMonths = []; // Create an empty array for salesMonths
+                    expensesDataByBranch.forEach(function(branchData, index) {
+                    var totalExpensesData = branchData.map(function(item) {
+                        expensesMonths.push(new Date(item.date).toLocaleString('default', { month: 'long' })); // Format sales_date to month and add to salesMonths array
+                        return item.total_expenses;
+                    });
+
+                    datasets.push({
+                        label: branchLabels[index],
+                        data: totalExpensesData,
+                        backgroundColor: lineColors[index], // Use different colors for each line
+                        borderColor: lineColors[index], // Use different colors for each line
+                        borderWidth: 2
+                    });
+                    });
+
+                    // Create a Chart.js line chart
+                    var ctx = document.getElementById('branchExpensesChart').getContext('2d');
+                    var chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: expensesMonths, // Use the salesMonths array for x-axis labels
                         datasets: datasets
                     },
                     options: {
