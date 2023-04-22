@@ -77,9 +77,7 @@
 					<li class="">
 						<a href="charts.php" class="dashboard"><i class="material-icons">equalizer</i><span>Charts</span></a>
 					</li>
-					<li class="">
-						<a href="reports.php" class="dashboard"><i class="material-icons">summarize</i><span>Reports</span></a>
-					</li>
+ 
 					<li class="dropdown">
 						<a href="#pageSubmenu7" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
 						<i class="material-icons">account_circle</i><span>Manage Users</span></a>
@@ -139,46 +137,38 @@
                         </div>
                     </div>
 
+                    <div class="row" style="margin: 0 20px;">
+                        <div class="col-md-3">
+                            <label>Start Date:</label>
+                            <input type="date" id="min-date" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label>End Date:</label>
+                            <input type="date" id="max-date" class="form-control">
+                        </div>
+                    </div>
+
                     <br />
 
                     <div class="row" style="margin: 0 20px;">
                         <div class="col-md-12">
-                            <div class="form-group">
-                                <input type="text" id="myInput" placeholder="Search..." class="form-control">
-                            </div>
                             <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <th>#</th>
-                                        <th>Date / Time</th>
-                                        <th>Type</th>
-                                        <th>Amount</th>
-                                        <th>Remarks</th>
-                                        <th>Actions</th>
+                                <table id="example" class="table display nowrap" style="width:100%">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th scope="col">Date</th>
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Amount</th>
+                                            <th scope="col">Remarks</th>
+                                            <th scope="col" class="no-print">Actions</th>
+                                        </tr>
                                     </thead>
-                                    <tbody id="myTable">
-
+                                    <tbody> 
                                         <?php 
-                                            require_once '../../includes/config.php';
 
-                                            if(isset($_GET['page_no']) && $_GET['page_no']!= ""){
-                                                $page_no = $_GET['page_no'];
-                                            } else {
-                                                $page_no = 1;
-                                            }
+                                            include '../../includes/config.php';
 
-                                            $total_records_per_page = 10;
-                                            $offset = ($page_no-1) * $total_records_per_page;
-                                            $previous_page = $page_no - 1;
-                                            $next_page = $page_no + 1;
-                                            $adjacents = "2";
-
-                                            $result_count = mysqli_query($conn, "SELECT COUNT(*) as total_records FROM expenses");
-                                            $total_records = mysqli_fetch_array($result_count);
-                                            $total_records = $total_records['total_records'];
-                                            $total_no_of_pages = ceil($total_records / $total_records_per_page);
-                                            $second_last = $total_no_of_pages - 1;
-
+                                            
                                             $admin = $_SESSION['admin_name'];
 											$sql1 = "SELECT * FROM users WHERE username = '$admin'";
 											$result = $conn->query($sql1);
@@ -186,17 +176,15 @@
 												$branch = $row['branch_id'];
 											}
 
-                                            $sql = mysqli_query($conn, "SELECT * FROM expenses WHERE branch_id = '$branch' LIMIT $offset, $total_records_per_page");
-                                            $count = 1;
-                                            $row = mysqli_num_rows($sql);
-                                            if ($row > 0) {
-                                                while($row = mysqli_fetch_array($sql)) {
+                                            $sql = "SELECT * FROM expenses WHERE branch_id = '$branch' ORDER BY id";								
+                                            $result = mysqli_query($conn, $sql);
 
-                                        ?>
+                                            while($row = mysqli_fetch_assoc($result)) {
+
+                                                ?>
 
                                         <tr>
-                                            <td><?php echo $count; ?></td>
-                                            <td><?php echo $row['date']; ?></td>
+                                            <td><strong><?php echo date('Y-m-d', strtotime($row['date'])); ?></strong></td>
                                             <td><?php echo $row['type']; ?></td>
                                             <td>₱<?php echo $row['amount']; ?></td>
                                             <td><?php echo $row['remarks']; ?></td>
@@ -207,106 +195,97 @@
                                         </tr>
 
                                         <?php
-                                                    $count = $count + 1;
-                                                }
+                                                
+
                                             }
+                                            
+                                            mysqli_close($conn);
                                         ?>
-                                        
                                     </tbody>
                                 </table>
                             </div>
-
-                            <nav aria-label="Page navigation">
-                                <ul class="pagination justify-content-end">
-                                    <li class="pull-left btn btn-default disabled">Showing page <?php echo $page_no. " of " . $total_no_of_pages;?></li>
-                                    <li <?php if($page_no <= 1) {echo "class='page-item disabled'";} ?>>
-                                        <a class="page-link" <?php if($page_no > 1) {echo "href='?page_no=$previous_page'";} ?>>Previous</a>
-                                    </li>
-
-                                    <?php 
-
-                                        if($total_no_of_pages <= 10){
-
-                                            for($counter = 1; $counter <= $total_no_of_pages; $counter++){
-
-                                                if($counter == $page_no) {
-                                                    echo "<li class='page-item active'><a class='page-link'>$counter<span class='sr-only'>(current)</span></a></li>";
-                                                } else {
-                                                    echo "<li class='page-item'><a class='page-link' href='?page_no=$counter'>$counter</a></li>";
-                                                }
-                                            }
-
-                                        } elseif($total_no_of_pages > 10) {
-
-                                            if($page_no <= 4){
-
-                                                for($counter = 1; $counter < 8; $counter++){
-
-                                                    if($counter == $page_no){
-                                                        echo "<li class='page-item active'><a class='page-link'>$counter<span class='sr-only'>(current)</span></a></li>";
-                                                    } else {
-                                                        echo "<li class='page-item'><a class='page-link' href='?page_no=$counter'>$counter</a></li>";
-                                                    }
-                                                }
-
-                                                echo "<li class='page-item'><a class='page-link'>...</a></li>";
-                                                echo "<li class='page-item'><a class='page-link' href='?page_no=$second_last'>$second_last</a></li>";
-                                                echo "<li class='page-item'><a class='page-link' href='?page_no=$total_no_of_pages'>$total_no_of_pages</a></li>";
-
-                                            }elseif($page_no > 4 && $page_no < $total_no_of_pages - 4){
-                                                echo "<li class='page-item'><a class='page-link' href='?page_no=1>1</a></li>";
-                                                echo "<li class='page-item'><a class='page-link' href='?page_no=2>2</a></li>";
-                                                echo "<li class='page-item'><a class='page-link'>...</a></li>";
-
-                                                for ($counter = $page_no - $adjacents; $counter <= $page_no + $adjacents; $counter++){
-
-                                                    if($counter == $page_no){
-                                                        echo "<li class='page-item active'><a class='page-link'>$counter<span class='sr-only'>(current)</span></a></li>";
-                                                    } else {
-                                                        echo "<li class='page-item'><a class='page-link' href='page_no=$counter'>$counter</a></li>";
-                                                    }
-                                                }
-
-                                                echo "<li class='page-item'><a class='page-link'>...</a></li>";
-                                                echo "<li class='page-item'><a class='page-link' href='?page_no=$second_last'>$second_last</a></li>";
-                                                echo "<li class='page-item'><a class='page-link' href='?page_no=$total_no_of_pages'>$total_no_of_pages</a></li>";
-
-                                            } else {
-                                                echo "<li class='page-item'><a class='page-link' href='?page_no=1>1</a></li>";
-                                                echo "<li class='page-item'><a class='page-link' href='?page_no=2>2</a></li>";
-                                                echo "<li class='page-item'><a class='page-link'>...</a></li>";
-
-                                                for($counter = $total_no_of_pages - 6; $counter <= $total_no_of_pages; $counter++){
-
-                                                    if($counter == $page_no){
-                                                        echo "<li class='page-item active'><a class='page-link'>$counter<span class='sr-only'>(current)</span></a></li>";
-                                                    } else {
-                                                        echo "<li class='page-item'><a class='page-link' href='page_no=$counter'>$counter</a></li>";
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    ?>
-
-                                    <li <?php if($page_no >= $total_no_of_pages){ echo "class='page-item disabled'";} ?>>
-                                        <a class='page-link' <?php if($page_no < $total_no_of_pages){ echo "href='?page_no=$next_page'";} ?>>Next</a>
-                                    </li>
-                                    <?php //if($page_no < $total_no_of_pages){ echo "<li><a class='page-link' href='?page_no=$total_no_of_pages'>Last &rsaquo; &rsaquo;</a></li>";} ?>
-                                </ul>
-                            </nav>
                         </div>
                     </div>
-                    </div>
+                </div>
 
-                    <script>
-                    $(document).ready(function(){
-                        $("#myInput").on("keyup",function() {
-                            var value = $(this).val().toLowerCase();
-                            $("#myTable tr").filter(function(){
-                                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-                            });
+                <script>
+                    $(document).ready(function() {
+                        $('#example').DataTable( {
+                            dom: 'Bfrtip',
+                            buttons: [
+                                {
+                                    extend: 'copy',
+                                    exportOptions: {
+                                        columns: ':visible:not(.no-print)'
+                                    }
+                                },
+                                {
+                                    extend: 'csv',
+                                    exportOptions: {
+                                        columns: ':visible:not(.no-print)'
+                                    }
+                                },
+                                {
+                                    extend: 'excel',
+                                    exportOptions: {
+                                        columns: ':visible:not(.no-print)'
+                                    }
+                                },
+                                {
+                                    extend: 'pdf',
+                                    exportOptions: {
+                                        columns: ':visible:not(.no-print)'
+                                    }
+                                },
+                                {
+                                    extend: 'print',
+                                    customize: function ( win ) {
+                                        $(win.document.body)
+                                            .find('.no-print')
+                                            .remove();
+                                    }
+                                }
+                            ],
+                            columnDefs: [
+                                {
+                                    targets: [4], // replace 2 with the index of the column you want to exclude
+                                    visible: true,
+                                    className: 'no-print'
+                                }
+                            ]
+                        } );
+                    });
+
+                    $(document).ready(function() {
+                        var table = $('#example').DataTable();
+
+                        // Add a custom filter function
+                        $.fn.dataTable.ext.search.push(
+                            function(settings, data, dataIndex) {
+                            var minDate = $('#min-date').val();
+                            var maxDate = $('#max-date').val();
+                            var date = data[0]; // assuming your date column is the first column
+
+                            // If the date column is empty, don't show the row
+                            if (date === "") {
+                                return false;
+                            }
+
+                            // Compare the date with the user input date range
+                            if ((minDate === "" || date >= minDate) &&
+                                (maxDate === "" || date <= maxDate)) {
+                                return true;
+                            }
+
+                            return false;
+                            }
+                        );
+
+                        // Trigger the filtering when the user changes the date range
+                        $('#min-date, #max-date').change(function() {
+                            table.draw();
                         });
                     });
-                    </script>
+                </script>
 
 <?php include_once 'footer.php'; ?>

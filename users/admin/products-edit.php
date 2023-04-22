@@ -77,9 +77,7 @@
 					<li class="">
 						<a href="charts.php" class="dashboard"><i class="material-icons">equalizer</i><span>Charts</span></a>
 					</li>
-					<li class="">
-						<a href="reports.php" class="dashboard"><i class="material-icons">summarize</i><span>Reports</span></a>
-					</li>
+ 
 					<li class="dropdown">
 						<a href="#pageSubmenu7" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
 						<i class="material-icons">account_circle</i><span>Manage Users</span></a>

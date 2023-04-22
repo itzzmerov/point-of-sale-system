@@ -120,7 +120,7 @@
 
 								<div class="card-content">
 									<p class="category"><strong>Total Sales</strong></p>
-									<h4 class="card-title">₱<?php echo $row['total_amount']; ?></h4>
+									<h4 class="card-title">₱<?php echo number_format($row['total_amount']); ?></h4>
 								<?php 
 										}
 									}
@@ -224,37 +224,28 @@
 					<!--SECOND ROW OF DASHBOARD CONTENT-->
 					
 					<div class="row">
-						<div class="col-lg-7 col-md-18">
+					<div class="col-lg-7 col-md-18">
 							<div class="card" style="min-height:485px">
 								<div class="card-header card-header-text">
 									<h4 class="card-title">Total Sales (Line Chart)</h4>
 								</div>
 
+								<div class="filter pull-right" style="margin: 20px;">
+									<label for="filter">Filter by:</label>
+									<select id="filter" class="form-select">
+										<option value="weekly">Weekly</option>
+										<option value="monthly">Monthly</option>
+										<option value="quarterly">Quarterly</option>
+										<option value="yearly">Yearly</option>
+									</select>
+								</div>
+
 								<div style="margin: 20px;">
-									<canvas id="branchSalesChart"></canvas>
+        							<canvas id="sales-chart"></canvas>
     							</div>
-
-								<?php
-									// Fetch data from 'sales' table using your database connection
-									include '../../includes/config.php';
-
-									// Query to fetch sales data with branch descriptions and total sales
-									$sql = "SELECT branch_description, invoice_date, SUM(subtotal_amount) AS total_sales FROM sales INNER JOIN branches ON sales.branch_id = branches.branch_id GROUP BY branches.branch_id, MONTH(sales.invoice_date)";
-									$result = mysqli_query($conn, $sql);
-
-									// Fetch data into an associative array
-									$data = array();
-									while ($row = mysqli_fetch_assoc($result)) {
-										$data[] = $row;
-									}
-
-									// Close database connection
-									mysqli_close($conn);
-								?>
 
 							</div>
 						</div>
-						<!--
 						<div class="col-lg-5 col-md-18">
 							<div class="card" style="min-height:485px">
 								<div class="card-header card-header-text">
@@ -262,46 +253,44 @@
 								</div>
 
 								<div class="filter pull-right" style="margin: 20px;">
-								<label for="filter_select">Filter by:</label>
-									<select id="filter_select">
-										<option value="weekly" selected>Weekly</option>
-										<option value="monthly">Monthly</option>
-										<option value="quarterly">Quarterly</option>
-										<option value="yearly">Yearly</option>
+									<select id="branch_filter" class="form-select" hidden>
+										<option selected value="all">All branches</option>
+										<?php 
+											include '../../includes/config.php';
+
+											$sql = "SELECT * FROM branches";
+											$result = $conn->query($sql);
+											
+											while($row = $result->fetch_assoc()) {
+												echo "<option value='" . $row['branch_id'] . "'>" . $row['branch_description']  . "</option>";
+											}
+
+											$conn->close();
+										?>
 									</select>
 								</div>
-								<br/><br/><br/> 
-								<div class="container" id="product_container">
-									<?php
-									// connect to database
-									/*include '../../includes/config.php';
+								<br/><br/>
 
-									// execute SQL query
-									$sql = "SELECT * FROM products WHERE delivery_date >= DATE_SUB(NOW(), INTERVAL 1 WEEK) ORDER BY sold DESC LIMIT 5";
-									$result = mysqli_query($conn, $sql);
-
-									// output products
-									while ($row = mysqli_fetch_assoc($result)) {
-										echo "<div class='product'>";
-										echo "<h5>" . $row["model_description"] . "</h5>";
-										echo "<p>" . $row["imei"] . " | ₱" . $row["price"] .  "</p>";
-										echo "<p>Sold: " . $row["sold"] . "</p><br/>";
-										echo "</div>";
-									}
-
-									// close database connection
-									mysqli_close($conn); */
-									?>
+								<div class="table-responsive">
+									<table class="table table-striped table-bordered" id="products_table">
+										<thead>
+											<tr>
+												<th>#</th>
+												<th>Name</th>
+												<th>Sold</th>
+											</tr>
+										</thead>
+										<tbody>
+											
+										</tbody>
+									</table>
 								</div>
-								<br/>
 							</div>
 						</div>
-						-->
 					</div>
 				</div>
 
 				<script>
-					/*
 					var filter = 'weekly';
 
 					var salesChart = new Chart($('#sales-chart'), {
@@ -362,101 +351,30 @@
 					}
 
 					updateChart();
-					*/
 
-					// Convert PHP data to JavaScript data for Chart.js
-                    var salesData = <?php echo json_encode($data); ?>;
+					//SCRIPT FOR THE HIGHEST SELLING PRODUCTS
+					$(document).ready(function() {
+						// Add event listener to branch filter
+						$('#branch_filter').change(function() {
+							// Get selected branch filter value
+							var branch_filter = $(this).val();
 
-                    // Extract branch descriptions and sales data from data
-                    var branchLabels = Array.from(new Set(salesData.map(function(item) {
-                    return item.branch_description;
-                    })));
+							// Make AJAX request to get products data
+							$.ajax({
+								url: 'get-products.php',
+								data: {
+									'branch_filter': branch_filter
+								},
+								success: function(data) {
+									// Replace table content with new data
+									$('#products_table tbody').html(data);
+								}
+							});
+						});
 
-                    var salesDataByBranch = branchLabels.map(function(branch) {
-                    return salesData.filter(function(item) {
-                        return item.branch_description === branch;
-                    });
-                    });
-
-                    // Define an array of colors for the lines
-                    var lineColors = ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'];
-
-                    // Create datasets for each branch with different colors
-                    var datasets = [];
-                    var salesMonths = []; // Create an empty array for salesMonths
-                    salesDataByBranch.forEach(function(branchData, index) {
-                    var totalSalesData = branchData.map(function(item) {
-                        salesMonths.push(new Date(item.invoice_date).toLocaleString('default', { month: 'long' })); // Format sales_date to month and add to salesMonths array
-                        return item.total_sales;
-                    });
-
-                    datasets.push({
-                        label: branchLabels[index],
-                        data: totalSalesData,
-                        backgroundColor: lineColors[index], // Use different colors for each line
-                        borderColor: lineColors[index], // Use different colors for each line
-                        borderWidth: 2
-                    });
-                    });
-
-                    // Create a Chart.js line chart
-                    var ctx = document.getElementById('branchSalesChart').getContext('2d');
-                    var chart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: salesMonths, // Use the salesMonths array for x-axis labels
-                        datasets: datasets
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                        x: {
-                            display: true,
-                            title: {
-                            display: true,
-                            text: 'Month' // Add x-axis title
-                            }
-                        },
-                        y: {
-                            display: true,
-                            title: {
-                            display: true,
-                            text: 'Total Sales' // Add y-axis title
-                            },
-                            beginAtZero: true,
-                            suggestedMax: 5000 // Update suggested max value for y-axis
-                        }
-                        }
-                    }
-                    });
-
-					//FILTER TRENDING PRODUCTS
-					var filterSelect = document.getElementById("filter_select");
-					var productContainer = document.getElementById("product_container");
-
-					filterSelect.addEventListener("change", function() {
-						fetchProducts(filterSelect.value);
+						// Load initial data
+						$('#branch_filter').trigger('change');
 					});
-
-					function fetchProducts(filter) {
-						var xhr = new XMLHttpRequest();
-						xhr.onreadystatechange = function() {
-							if (xhr.readyState == 4 && xhr.status == 200) {
-								var products = JSON.parse(xhr.responseText);
-								productContainer.innerHTML = "";
-								products.forEach(function(product) {
-									var div = document.createElement("div");
-									div.className = "product";
-									div.innerHTML = "<h5>" + product.name + "</h5>" +
-													"<p>" + product.imei + " | ₱" + product.price + "</p>" +
-													"<p>Sold: " + product.sold + "</p><br />";
-									productContainer.appendChild(div);
-								});
-							}
-						};
-						xhr.open("GET", "get-trending-products.php?filter=" + filter, true);
-						xhr.send();
-					}
 				</script>
 
 <?php include_once 'footer.php'; ?>

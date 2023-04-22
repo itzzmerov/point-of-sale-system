@@ -16,9 +16,13 @@ switch ($filter) {
         break;
     case 'yearly':
         $date_format = '%b';
-        $interval = '1 MONTH'; 
+        $interval = '1 MONTH';
         break;
-    default: // weekly
+    case 'weekly':
+        $date_format = '%M Week %u';
+        $interval = '1 WEEK';
+        break;
+    default:
         $date_format = '%a %d';
         $interval = '1 DAY';
         break;

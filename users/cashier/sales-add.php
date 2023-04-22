@@ -41,9 +41,6 @@
 					<li class="">
 						<a href="charts.php" class="dashboard"><i class="material-icons">equalizer</i><span>Charts</span></a>
 					</li>
-					<li class="">
-						<a href="reports.php" class="dashboard"><i class="material-icons">summarize</i><span>Reports</span></a>
-					</li>
 					<li class="logout">
 						<a href="?logout='1'"><i class="material-icons">logout</i><span>Logout</span></a>
 					</li>

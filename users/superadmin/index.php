@@ -90,9 +90,7 @@
 					<li class="">
 						<a href="charts.php" class="dashboard"><i class="material-icons">equalizer</i><span>Charts</span></a>
 					</li>
-					<li class="">
-						<a href="reports.php" class="dashboard"><i class="material-icons">summarize</i><span>Reports</span></a>
-					</li>
+ 
 					<li class="dropdown">
 						<a href="#pageSubmenu7" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
 						<i class="material-icons">account_circle</i><span>Manage Users</span></a>
@@ -321,7 +319,6 @@
 
 							</div>
 						</div>
-						<!--
 						<div class="col-lg-5 col-md-18">
 							<div class="card" style="min-height:485px">
 								<div class="card-header card-header-text">
@@ -329,41 +326,40 @@
 								</div>
 
 								<div class="filter pull-right" style="margin: 20px;">
-								<label for="filter_select">Filter by:</label>
-									<select id="filter_select">
-										<option value="weekly" selected>Weekly</option>
-										<option value="monthly">Monthly</option>
-										<option value="quarterly">Quarterly</option>
-										<option value="yearly">Yearly</option>
+									<select id="branch_filter" class="form-select" hidden>
+										<option selected value="all">All branches</option>
+										<?php 
+											include '../../includes/config.php';
+
+											$sql = "SELECT * FROM branches";
+											$result = $conn->query($sql);
+											
+											while($row = $result->fetch_assoc()) {
+												echo "<option value='" . $row['branch_id'] . "'>" . $row['branch_description']  . "</option>";
+											}
+
+											$conn->close();
+										?>
 									</select>
 								</div>
-								<br/><br/><br/> 
-								<div class="container" id="product_container">
-									<?php
-									// connect to database
-									/*include '../../includes/config.php';
+								<br/><br/>
 
-									// execute SQL query
-									$sql = "SELECT * FROM products WHERE delivery_date >= DATE_SUB(NOW(), INTERVAL 1 WEEK) ORDER BY sold DESC LIMIT 5";
-									$result = mysqli_query($conn, $sql);
-
-									// output products
-									while ($row = mysqli_fetch_assoc($result)) {
-										echo "<div class='product'>";
-										echo "<h5>" . $row["model_description"] . "</h5>";
-										echo "<p>" . $row["imei"] . " | ₱" . $row["price"] .  "</p>";
-										echo "<p>Sold: " . $row["sold"] . "</p><br/>";
-										echo "</div>";
-									}
-
-									// close database connection
-									mysqli_close($conn); */
-									?>
+								<div class="table-responsive">
+									<table class="table table-striped table-bordered" id="products_table">
+										<thead>
+											<tr>
+												<th>#</th>
+												<th>Name</th>
+												<th>Sold</th>
+											</tr>
+										</thead>
+										<tbody>
+											
+										</tbody>
+									</table>
 								</div>
-								<br/>
 							</div>
 						</div>
-						-->
 					</div>
 				</div>
 
@@ -429,33 +425,29 @@
 
 					updateChart();
 
-					//FILTER TRENDING PRODUCTS
-					var filterSelect = document.getElementById("filter_select");
-					var productContainer = document.getElementById("product_container");
+					//SCRIPT FOR THE HIGHEST SELLING PRODUCTS
+					$(document).ready(function() {
+						// Add event listener to branch filter
+						$('#branch_filter').change(function() {
+							// Get selected branch filter value
+							var branch_filter = $(this).val();
 
-					filterSelect.addEventListener("change", function() {
-						fetchProducts(filterSelect.value);
+							// Make AJAX request to get products data
+							$.ajax({
+								url: 'get-products.php',
+								data: {
+									'branch_filter': branch_filter
+								},
+								success: function(data) {
+									// Replace table content with new data
+									$('#products_table tbody').html(data);
+								}
+							});
+						});
+
+						// Load initial data
+						$('#branch_filter').trigger('change');
 					});
-
-					function fetchProducts(filter) {
-						var xhr = new XMLHttpRequest();
-						xhr.onreadystatechange = function() {
-							if (xhr.readyState == 4 && xhr.status == 200) {
-								var products = JSON.parse(xhr.responseText);
-								productContainer.innerHTML = "";
-								products.forEach(function(product) {
-									var div = document.createElement("div");
-									div.className = "product";
-									div.innerHTML = "<h5>" + product.name + "</h5>" +
-													"<p>" + product.imei + " | ₱" + product.price + "</p>" +
-													"<p>Sold: " + product.sold + "</p><br />";
-									productContainer.appendChild(div);
-								});
-							}
-						};
-						xhr.open("GET", "get-trending-products.php?filter=" + filter, true);
-						xhr.send();
-					}
 				</script>
 
 <?php include_once 'footer.php'; ?>

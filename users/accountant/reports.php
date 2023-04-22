@@ -53,88 +53,192 @@
 					</nav>
 				</div>	
 
-				<!-- MAIN CONTENT -->
+				<!--MAIN CONTENT HERE!!!!!!!!-->
 				<div class="container">
-					<div class="row">
-						<div class="col-md-12">
-							<br /><br />
-							<h2 style="margin: 0 20px;">Sales Report</h2>
-							<br />
+
+                    <br /><br />
+
+                    <div class="row" style="margin: 0 20px;">
+                        <div class="col-md-12">
+                            <h2> Sales Report</h2>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin: 0 20px;">
+						<div class="col-md-3">
+							<label>Start Date:</label>
+							<input type="date" id="min-date" class="form-control">
+						</div>
+						<div class="col-md-3">
+							<label>End Date:</label>
+							<input type="date" id="max-date" class="form-control">
+						</div>
+						<div class="col-md-3">
+							<label>Branch:</label>
+							<select id="branch-filter" class="form-select">
+								<option value="">All</option>
+								<?php 
+									require_once '../../includes/config.php';
+
+									$sql10 = "SELECT * FROM branches";
+									$result = $conn->query($sql10);
+									while($row = $result->fetch_assoc()) {
+										echo "<option value='" . $row['branch_description'] . "'>" . $row['branch_description'] . "</option>";
+									}
+
+									mysqli_close($conn);
+								?>
+							</select>
 						</div>
 					</div>
-					<table id="example" class="table display nowrap" style="width:100%">
-						<thead class="thead-dark">
-							<tr>
-								<th scope="col">Invoice No.</th>
-								<th scope="col">Qty</th>
-								<th scope="col">Name</th>
-								<th scope="col">Category</th>
-								<th scope="col">SRP</th>
-								<th scope="col">Disc</th>
-								<th scope="col">Subtotal</th>
-								<th scope="col">S. R.</th>
-							</tr>
-						</thead>
-						<tbody> 
-							<?php 
 
-								include '../../includes/config.php';
+                    <br />
 
-								$sql = "SELECT * FROM ((((sales INNER JOIN users ON sales.user_id = users.user_id) INNER JOIN branches ON sales.branch_id = branches.branch_id) INNER JOIN products ON sales.product_id = products.product_id) INNER JOIN categories ON sales.category_id = categories.category_id) ORDER BY invoice_number";
-								$result = mysqli_query($conn, $sql);
+                    <div class="row" style="margin: 0 20px;">
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table id="example" class="table display nowrap" style="width:100%">
+									<thead class="thead-dark">
+										<tr>
+											<th col="scope">Branch</th>
+                                            <th col="scope">Date</th>
+                                            <th col="scope">Invoice No.</th>
+                                            <th col="scope">Name</th>
+                                            <th col="scope">Category</th>
+                                            <th col="scope">Quantity</th>
+                                            <th col="scope">Price</th>
+                                            <th col="scope">Discount</th>
+                                            <th col="scope">SubTotal</th>
+                                            <th col="scope">S.R.</th>
+											<th col="scope">Actions</th>
+										</tr>
+									</thead>
+									<tbody> 
+										<?php 
 
-								$currentInvoiceNumber = null;
-								$total = 0;
+											include '../../includes/config.php';
 
-								while($row = mysqli_fetch_assoc($result)) {
+											$sql = "SELECT * FROM ((((sales INNER JOIN products ON sales.product_id = products.product_id) INNER JOIN categories ON sales.category_id = categories.category_id) INNER JOIN users ON sales.user_id = users.user_id) INNER JOIN branches ON sales.branch_id = branches.branch_id) ORDER BY invoice_number";
+											$result = mysqli_query($conn, $sql);
 
-									// Add the row data to the table
-									echo "<tr>";
-									echo "<td><strong>".$row['invoice_number']."</strong></td>";
-									echo "<td>".$row['quantity']."</td>";
-									echo "<td>".$row['name']."</td>";
-									echo "<td>".$row['category_description']."</td>";
-									echo "<td>".$row['price']."</td>";
-									echo "<td>".$row['discount']."</td>";
-									echo "<td>".$row['subtotal_amount']."</td>";
-									echo "<td>". substr($row['first_name'], 0, 1). ". " . substr($row['last_name'], 0, 1) .".</td>";
-									echo "</tr>";
-								}
-								
-								mysqli_close($conn);
-							?>
-						</tbody>
-					</table>
-				</div>
+											$currentInvoiceNumber = null;
+											$total = 0;
+
+											while($row = mysqli_fetch_assoc($result)) {
+
+												?>
+
+											<tr>
+												<td><strong><?php echo $row['branch_description']; ?></strong></td>
+												<td><?php echo $row['invoice_date']; ?></td>
+												<td><?php echo $row['invoice_number']; ?></td>
+												<td><?php echo $row['name']; ?></td>
+												<td><?php echo $row['category_description']; ?></td>
+												<td><?php echo $row['quantity']; ?></td>
+												<td><?php echo $row['price']; ?></td>
+												<td><?php echo $row['discount']; ?></td>
+												<td><?php echo $row['subtotal_amount']; ?></td>
+												<td><?php echo substr($row['first_name'], 0, 1) . ". " . substr($row['last_name'], 0, 1) . "."; ?></td>
+												<td>
+													<a href="sales-edit.php?id=<?php echo htmlentities($row['invoice_id']); ?>" class="btn btn-primary btn-sm"> Edit </a>
+													<a href="sales-manage.php?delid=<?php echo htmlentities($row['invoice_id']); ?>" onclick="return confirm('Do you really want to delete this record?');" class="btn btn-danger btn-sm"> Delete </a>
+												</td>
+											</tr>
+
+										<?php
+											}
+											
+											mysqli_close($conn);
+										?>
+									</tbody>
+								</table> 
+                            </div>
+                        </div>
+                    </div>
+                </div>
 				<script>
 					$(document).ready(function() {
 						$('#example').DataTable( {
 							dom: 'Bfrtip',
 							buttons: [
-								'copy', 'csv', 'excel', 'pdf', 'print'
+								{
+									extend: 'copy',
+									exportOptions: {
+										columns: ':visible:not(.no-print)'
+									}
+								},
+								{
+									extend: 'csv',
+									exportOptions: {
+										columns: ':visible:not(.no-print)'
+									}
+								},
+								{
+									extend: 'excel',
+									exportOptions: {
+										columns: ':visible:not(.no-print)'
+									}
+								},
+								{
+									extend: 'pdf',
+									exportOptions: {
+										columns: ':visible:not(.no-print)'
+									}
+								},
+								{
+									extend: 'print',
+									customize: function ( win ) {
+										$(win.document.body)
+											.find('.no-print')
+											.remove();
+									}
+								}
+							],
+							columnDefs: [
+								{
+									targets: [10], // replace 2 with the index of the column you want to exclude
+									visible: true,
+									className: 'no-print'
+								}
 							]
 						} );
 					});
 
-					
 					$(document).ready(function() {
-						// Set initial state for user info visibility
-						var isUserInfoVisible = true;
-						
-						// Listen for click event on sidebar-collapse button
-						$('#sidebar-collapse').on('click', function() {
-							// Toggle user info visibility
-							if (isUserInfoVisible) {
-								$('#userInfo').hide();
-							} else {
-								$('#userInfo').show();
+						var table = $('#example').DataTable();
+
+						// Add a custom filter function
+						$.fn.dataTable.ext.search.push(
+							function(settings, data, dataIndex) {
+							var minDate = $('#min-date').val();
+							var maxDate = $('#max-date').val();
+							var branch = $('#branch-filter').val();
+							var date = data[1]; // assuming your date column is the first column
+							var branchData = data[0];
+
+							// If the date column is empty, don't show the row
+							if (date === "" || branchData === "") {
+								return false;
 							}
-							
-							// Update the state of user info visibility
-							isUserInfoVisible = !isUserInfoVisible;
+
+							// Compare the date with the user input date range
+							if ((minDate === "" || date >= minDate) &&
+								(maxDate === "" || date <= maxDate)) {
+								// Compare the branch with the selected branch
+								if (branch === "" || branch === branchData) {
+									return true;
+								}
+							}
+
+							return false;
+							}
+						);
+
+						// Trigger the filtering when the user changes the date range
+						$('#min-date, #max-date, #branch-filter').change(function() {
+							table.draw();
 						});
 					});
-				
 				</script>
 
 
