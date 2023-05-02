@@ -116,199 +116,104 @@
                     <div class="row">
                         <div class="col-md-12">
                             <br /><br />
-                            <h2 style="margin: 0 20px;">Total Sales per Branch</h2>
+                            <h2 style="margin: 0 20px;">Total Sales</h2>
                             <br />
                         </div>
-                        <!-- TOTAL SALES CHART -->
-                        <?php
-                            // Fetch data from 'sales' table using your database connection
-                            include '../../includes/config.php';
-
-                            // Query to fetch sales data with branch descriptions and total sales
-                            $sql = "SELECT branch_description, invoice_date, SUM(subtotal_amount) AS total_sales FROM sales INNER JOIN branches ON sales.branch_id = branches.branch_id GROUP BY branches.branch_id, MONTH(sales.invoice_date)";
-                            $result = mysqli_query($conn, $sql);
-
-                            // Fetch data into an associative array
-                            $data = array();
-                            while ($row = mysqli_fetch_assoc($result)) {
-                                $data[] = $row;
-                            }
-
-                            // Close database connection
-                            mysqli_close($conn);
-                        ?>
-
-                        <div style="max-width: 800px; margin: 0 auto;">
-                            <canvas id="branchSalesChart" style="background-color: #fff;"></canvas>
-                        </div>
                     </div>
-
-                    
-
                     <div class="row">
-                        <div class="col-md-12">
-                            <br /><br />
-                            <h2 style="margin: 0 20px;">Total Expenses
+                        <div class="col-md-6">
+                            <canvas id="myChart"></canvas>
                         </div>
-                            <!-- TOTAL EXPENSES CHART -->
-                            <?php
-                            // Fetch data from 'sales' table using your database connection
-                            include '../../includes/config.php';
+                        <div class="col-md-6">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th col="scope">Product</th>
+                                        <th col="scope">Percentage Sold</th>
+                                        <th col="scope">Total Sales</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                        include '../../includes/config.php';
 
-                            // Query to fetch sales data with branch descriptions and total sales
-                            $sql1 = "SELECT branch_description, date, SUM(amount) AS total_expenses FROM expenses INNER JOIN branches ON expenses.branch_id = branches.branch_id GROUP BY expenses.branch_id, MONTH(expenses.date)";
-                            $result = mysqli_query($conn, $sql1);
-
-                            // Fetch data into an associative array
-                            $dataExpenses = array();
-                            while ($row = mysqli_fetch_assoc($result)) {
-                                $dataExpenses[] = $row;
-                            }
-
-                            // Close database connection
-                            mysqli_close($conn);
-                        ?>
-
-                        <div style="max-width: 800px; margin: 0 auto;">
-                            <canvas id="branchExpensesChart" style="background-color: #fff;"></canvas>
+                                        $admin = $_SESSION['admin_name'];
+                                        $sql1 = "SELECT * FROM users WHERE username = '$admin'";
+                                        $result = $conn->query($sql1);
+                                        while($row = $result->fetch_assoc()) {
+                                            $branch = $row['branch_id'];
+                                        }
+                                
+                                        $query = "SELECT products.name, SUM(sales.quantity) AS total, SUM(sales.subtotal_amount) AS total_sales_amount
+                                                  FROM sales 
+                                                  INNER JOIN products ON sales.product_id = products.product_id 
+                                                  WHERE sales.branch_id = '$branch' 
+                                                  GROUP BY sales.product_id 
+                                                  ORDER BY total_sales_amount DESC 
+                                                  LIMIT 10";
+                                
+                                        $result = mysqli_query($conn, $query);
+                                
+                                        $data = array();
+                                        $total = 0;
+                                        while($row = mysqli_fetch_assoc($result)) {
+                                          $data[$row['name']] = $row['total'];
+                                          $total += $row['total'];
+                                          $total_sales_amount[$row['name']] = $row['total_sales_amount'];
+                                        }
+                                
+                                        $percentages = array();
+                                        foreach ($data as $key => $value) {
+                                          $percentage = ($value / $total) * 100;
+                                          $percentages[$key] = $percentage;
+                                          echo "<tr><td>$key</td><td>" . number_format($percentage, 2) . "%</td><td>₱" . number_format($total_sales_amount[$key], 2) . "</td></tr>";
+                                        }
+                                    ?>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
 
                 <script>
-					/////////// TOTAL SALES CHART SCRIPT ///////////////
-                    // Convert PHP data to JavaScript data for Chart.js
-                    var salesData = <?php echo json_encode($data); ?>;
+					var data = <?php echo json_encode($percentages); ?>;
+                    var labels = Object.keys(data);
+                    var values = Object.values(data);
 
-                    // Extract branch descriptions and sales data from data
-                    var branchLabels = Array.from(new Set(salesData.map(function(item) {
-                    return item.branch_description;
-                    })));
-
-                    var salesDataByBranch = branchLabels.map(function(branch) {
-                    return salesData.filter(function(item) {
-                        return item.branch_description === branch;
-                    });
-                    });
-
-                    // Define an array of colors for the lines
-                    var lineColors = ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'];
-
-                    // Create datasets for each branch with different colors
-                    var datasets = [];
-                    var salesMonths = []; // Create an empty array for salesMonths
-                    salesDataByBranch.forEach(function(branchData, index) {
-                    var totalSalesData = branchData.map(function(item) {
-                        salesMonths.push(new Date(item.invoice_date).toLocaleString('default', { month: 'long' })); // Format sales_date to month and add to salesMonths array
-                        return item.total_sales;
-                    });
-
-                    datasets.push({
-                        label: branchLabels[index],
-                        data: totalSalesData,
-                        backgroundColor: lineColors[index], // Use different colors for each line
-                        borderColor: lineColors[index], // Use different colors for each line
-                        borderWidth: 2
-                    });
-                    });
-
-                    // Create a Chart.js line chart
-                    var ctx = document.getElementById('branchSalesChart').getContext('2d');
-                    var chart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: salesMonths, // Use the salesMonths array for x-axis labels
-                        datasets: datasets
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                        x: {
-                            display: true,
-                            title: {
-                            display: true,
-                            text: 'Month' // Add x-axis title
-                            }
+                    var ctx = document.getElementById('myChart').getContext('2d');
+                    var myChart = new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                data: values,
+                                backgroundColor: [
+                                    'rgb(255, 99, 132)',
+                                    'rgb(54, 162, 235)',
+                                    'rgb(255, 205, 86)',
+                                    'rgb(75, 192, 192)',
+                                    'rgb(153, 102, 255)',
+                                    'rgb(255, 159, 64)'
+                                ],
+                            }]
                         },
-                        y: {
-                            display: true,
+                        options: {
                             title: {
                             display: true,
-                            text: 'Total Sales' // Add y-axis title
+                            text: 'Sales Report'
                             },
-                            beginAtZero: true,
-                            suggestedMax: 5000 // Update suggested max value for y-axis
-                        }
-                        }
-                    }
-                    });
-
-					/////////// EXPENSES CHART SCRIPT ///////////////
-					// Convert PHP data to JavaScript data for Chart.js
-                    var expensesData = <?php echo json_encode($dataExpenses); ?>;
-
-                    // Extract branch descriptions and sales data from data
-                    var branchLabels = Array.from(new Set(expensesData.map(function(item) {
-                    return item.branch_description;
-                    })));
-
-                    var expensesDataByBranch = branchLabels.map(function(branch) {
-                    return expensesData.filter(function(item) {
-                        return item.branch_description === branch;
-                    });
-                    });
-
-                    // Define an array of colors for the lines
-                    var lineColors = ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'];
-
-                    // Create datasets for each branch with different colors
-                    var datasets = [];
-                    var expensesMonths = []; // Create an empty array for salesMonths
-                    expensesDataByBranch.forEach(function(branchData, index) {
-                    var totalExpensesData = branchData.map(function(item) {
-                        expensesMonths.push(new Date(item.date).toLocaleString('default', { month: 'long' })); // Format sales_date to month and add to salesMonths array
-                        return item.total_expenses;
-                    });
-
-                    datasets.push({
-                        label: branchLabels[index],
-                        data: totalExpensesData,
-                        backgroundColor: lineColors[index], // Use different colors for each line
-                        borderColor: lineColors[index], // Use different colors for each line
-                        borderWidth: 2
-                    });
-                    });
-
-                    // Create a Chart.js line chart
-                    var ctx = document.getElementById('branchExpensesChart').getContext('2d');
-                    var chart = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: expensesMonths, // Use the salesMonths array for x-axis labels
-                        datasets: datasets
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                        x: {
-                            display: true,
-                            title: {
-                            display: true,
-                            text: 'Month' // Add x-axis title
+                            tooltips: {
+                                callbacks: {
+                                    label: function(tooltipItem, data) {
+                                    var value = data.datasets[0].data[tooltipItem.index];
+                                    var label = data.labels[tooltipItem.index];
+                                    return label + ': ' + value.toLocaleString() + '%';
+                                    }
+                                }
                             }
-                        },
-                        y: {
-                            display: true,
-                            title: {
-                            display: true,
-                            text: 'Total Sales' // Add y-axis title
-                            },
-                            beginAtZero: true,
-                            suggestedMax: 5000 // Update suggested max value for y-axis
                         }
-                        }
-                    }
                     });
+
                 </script>
 
 
