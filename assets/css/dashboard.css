@@ -192,6 +192,7 @@ a,a:hover,a:focus{
 	position:absolute;
 	right:10px;
 	top:23px;
+	color: black;
 }
    
 #sidebar ul li.drodown{
@@ -210,11 +211,14 @@ a,a:hover,a:focus{
 	position:relative;
     font-weight: 400;
     display: block;
+	text-decoration: none;
+	color: black;
 }
 
 #sidebar ul li a span{
 	text-transform:capitalize;
 	display:inline-block;
+	color: black;
 }
 
 #sidebar ul li a i {
